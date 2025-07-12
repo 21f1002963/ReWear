@@ -1,0 +1,574 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Add New Item - ReWear{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrapper {
+    background: #fff;
+    background-image: none;
+  }
+
+  .auth-wrapper::before {
+    display: none;
+  }
+
+  .form-card {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .form-header {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    color: white;
+    padding: 1.5rem;
+  }
+
+  .form-body {
+    padding: 2rem;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #3a7bd5;
+    box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.25);
+  }
+
+  .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-select:focus {
+    border-color: #3a7bd5;
+    box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.25);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58, 123, 213, 0.3);
+  }
+
+  .btn-secondary {
+    background: #6c757d;
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+  }
+
+  .file-upload-area {
+    border: 2px dashed #3a7bd5;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9ff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .file-upload-area:hover {
+    background: #f0f4ff;
+    border-color: #2c5aa0;
+  }
+
+  .file-upload-area.dragover {
+    background: #e3f2fd;
+    border-color: #1976d2;
+  }
+
+  .file-upload-icon {
+    font-size: 3rem;
+    color: #3a7bd5;
+    margin-bottom: 1rem;
+  }
+
+  .file-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .preview-container {
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .preview-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-video {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .file-info {
+    background: #e8f5e9;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-left: 4px solid #4caf50;
+  }
+
+  .remove-file {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Slide menu styles */
+  #menu-toggle {
+    display: none;
+  }
+
+  .burger-btn {
+    position: fixed;
+    top: 12px;
+    left: 25px;
+    z-index: 2100;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .burger-btn:active,
+  .burger-btn:focus {
+    background: #f0f0f0;
+    outline: none;
+  }
+
+  .slide-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding-top: 60px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .slide-menu ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .slide-menu li {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+
+  .slide-menu a {
+    color: #333;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  .slide-menu a:hover {
+    color: #3a7bd5;
+  }
+
+  .slide-menu a[href*="logout"] {
+    color: #dc3545;
+  }
+
+  .slide-menu a[href*="logout"]:hover {
+    color: #c82333;
+  }
+
+  #menu-toggle:checked~.slide-menu {
+    transform: translateX(0);
+  }
+
+  #menu-toggle:checked~.burger-btn {
+    display: none;
+  }
+
+  @media (max-width: 576px) {
+    .slide-menu {
+      width: 80vw;
+    }
+
+    .burger-btn {
+      left: 10px;
+      top: 10px;
+    }
+
+    .form-body {
+      padding: 1rem;
+    }
+  }
+
+  .invalid-feedback {
+    display: block;
+  }
+
+  .is-invalid {
+    border-color: #dc3545;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<input type="checkbox" id="menu-toggle">
+<label for="menu-toggle" class="burger-btn" aria-label="Open menu">
+  <i class="fas fa-bars"></i>
+</label>
+<nav class="slide-menu" tabindex="-1">
+  <label for="menu-toggle" class="close-btn" aria-label="Close menu">&times;</label>
+  <ul>
+    <li><a href="{{ url_for('user.dashboard') }}"><i class="fas fa-home me-2"></i>Home</a></li>
+    <li><a href="{{ url_for('user.edit_profile') }}"><i class="fas fa-user-edit me-2"></i>Edit Profile</a></li>
+    <li><a href="{{ url_for('user.uploaded_items') }}"><i class="fas fa-upload me-2"></i>Uploaded Items</a></li>
+    <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+  </ul>
+</nav>
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <div class="form-card">
+        <div class="form-header">
+          <h2 class="mb-0">
+            <i class="fas fa-plus-circle me-2"></i>
+            Add New Item
+          </h2>
+          <p class="mb-0 mt-2 opacity-75">Share your clothing items with the ReWear community</p>
+        </div>
+        
+        <div class="form-body">
+          <form method="POST" enctype="multipart/form-data" id="addItemForm">
+            {{ form.hidden_tag() }}
+            
+            <div class="row">
+              <div class="col-md-8">
+                <!-- Title -->
+                <div class="mb-3">
+                  {{ form.title.label(class="form-label fw-bold") }}
+                  {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                  {% for error in form.title.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                  {% endfor %}
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                  {{ form.description.label(class="form-label fw-bold") }}
+                  {{ form.description(class="form-control", rows="4", placeholder="Describe your item...") }}
+                  {% for error in form.description.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                  {% endfor %}
+                </div>
+
+                <!-- Category and Size -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    {{ form.category.label(class="form-label fw-bold") }}
+                    {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else ""), id="categorySelect") }}
+                    {% for error in form.category.errors %}
+                      <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    {{ form.size.label(class="form-label fw-bold") }}
+                    {{ form.size(class="form-select" + (" is-invalid" if form.size.errors else "")) }}
+                    {% for error in form.size.errors %}
+                      <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <!-- Points Preview -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Estimated Points Value</label>
+                  <div class="alert alert-info d-flex align-items-center">
+                    <i class="fas fa-coins text-warning me-2"></i>
+                    <span id="pointsPreview">Select category and condition to see points</span>
+                  </div>
+                  <small class="text-muted">Points are automatically calculated based on category and condition</small>
+                </div>
+
+                <!-- Condition and Quantity -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    {{ form.condition.label(class="form-label fw-bold") }}
+                    {{ form.condition(class="form-select" + (" is-invalid" if form.condition.errors else ""), id="conditionSelect") }}
+                    {% for error in form.condition.errors %}
+                      <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    {{ form.quantity.label(class="form-label fw-bold") }}
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-boxes text-info"></i></span>
+                      {{ form.quantity(class="form-control" + (" is-invalid" if form.quantity.errors else "")) }}
+                      {% for error in form.quantity.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Color and Brand -->
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    {{ form.color.label(class="form-label fw-bold") }}
+                    {{ form.color(class="form-control", placeholder="e.g., Red, Blue, Black") }}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    {{ form.brand.label(class="form-label fw-bold") }}
+                    {{ form.brand(class="form-control", placeholder="e.g., Nike, Zara, H&M") }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <!-- Media Upload -->
+                <div class="mb-3">
+                  {{ form.media_file.label(class="form-label fw-bold") }}
+                  <div class="file-upload-area" id="fileUploadArea">
+                    {{ form.media_file(class="file-input", id="mediaFile", accept="image/*,video/*") }}
+                    <div class="upload-content" id="uploadContent">
+                      <div class="file-upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                      </div>
+                      <h5>Drop files here or click to browse</h5>
+                      <p class="text-muted mb-0">Support: JPG, PNG, GIF, MP4, MOV, AVI, WEBM</p>
+                      <p class="text-muted small">Max size: 10MB</p>
+                    </div>
+                    <div class="preview-container" id="previewContainer" style="display: none;">
+                      <div class="position-relative d-inline-block">
+                        <button type="button" class="remove-file" id="removeFile">
+                          <i class="fas fa-times"></i>
+                        </button>
+                        <div id="mediaPreview"></div>
+                      </div>
+                      <div class="file-info mt-2">
+                        <small id="fileInfo"></small>
+                      </div>
+                    </div>
+                  </div>
+                  {% for error in form.media_file.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{{ url_for('user.uploaded_items') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Cancel
+              </a>
+              {{ form.submit(class="btn btn-primary") }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('mediaFile');
+    const uploadArea = document.getElementById('fileUploadArea');
+    const uploadContent = document.getElementById('uploadContent');
+    const previewContainer = document.getElementById('previewContainer');
+    const mediaPreview = document.getElementById('mediaPreview');
+    const fileInfo = document.getElementById('fileInfo');
+    const removeBtn = document.getElementById('removeFile');
+    const categorySelect = document.getElementById('categorySelect');
+    const conditionSelect = document.getElementById('conditionSelect');
+    const pointsPreview = document.getElementById('pointsPreview');
+
+    // Points calculation
+    const categoryPoints = {
+        'tops': 8,
+        'bottoms': 10,
+        'dresses': 15,
+        'outerwear': 20,
+        'shoes': 12,
+        'accessories': 5,
+        'activewear': 12,
+        'formal': 18,
+        'casual': 8,
+        'vintage': 25,
+        'other': 6
+    };
+
+    const conditionMultipliers = {
+        'excellent': 1.0,
+        'good': 0.8,
+        'fair': 0.6,
+        'poor': 0.4
+    };
+
+    function calculatePoints() {
+        const category = categorySelect.value;
+        const condition = conditionSelect.value;
+        
+        if (category && condition) {
+            const basePoints = categoryPoints[category] || 6;
+            const multiplier = conditionMultipliers[condition] || 0.8;
+            const points = Math.max(1, Math.floor(basePoints * multiplier));
+            pointsPreview.innerHTML = `<strong>${points} points</strong> - This item will be worth ${points} points for exchange`;
+        } else {
+            pointsPreview.textContent = 'Select category and condition to see points';
+        }
+    }
+
+    // File upload handling
+    fileInput.addEventListener('change', handleFileSelect);
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', handleDragOver);
+    uploadArea.addEventListener('dragleave', handleDragLeave);
+    uploadArea.addEventListener('drop', handleDrop);
+    removeBtn.addEventListener('click', removeFile);
+
+    // Points calculation
+    categorySelect.addEventListener('change', calculatePoints);
+    conditionSelect.addEventListener('change', calculatePoints);
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            showPreview(file);
+        }
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            showPreview(files[0]);
+        }
+    }
+
+    function showPreview(file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            uploadContent.style.display = 'none';
+            previewContainer.style.display = 'block';
+            
+            if (file.type.startsWith('image/')) {
+                mediaPreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="preview-image">`;
+            } else if (file.type.startsWith('video/')) {
+                mediaPreview.innerHTML = `<video src="${e.target.result}" controls class="preview-video"></video>`;
+            }
+            
+            fileInfo.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+        };
+        
+        reader.readAsDataURL(file);
+    }
+
+    function removeFile() {
+        fileInput.value = '';
+        uploadContent.style.display = 'block';
+        previewContainer.style.display = 'none';
+        mediaPreview.innerHTML = '';
+        fileInfo.textContent = '';
+    }
+
+    // Initialize points calculation if values are already selected
+    calculatePoints();
+});
+</script>
+{% endblock %}

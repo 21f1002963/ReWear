@@ -81,10 +81,10 @@ class AddItemForm(FlaskForm):
         Length(max=50, message='Brand cannot exceed 50 characters')
     ])
     
-    points_required = IntegerField('Points Required', validators=[
-        DataRequired(message='Points required is mandatory'),
-        NumberRange(min=1, max=100, message='Points must be between 1 and 100')
-    ], default=10)
+    quantity = IntegerField('Quantity', validators=[
+        DataRequired(message='Quantity is required'),
+        NumberRange(min=1, max=50, message='Quantity must be between 1 and 50')
+    ], default=1)
     
     media_file = FileField('Upload Image or Video', validators=[
         FileRequired(message='Please upload an image or video'),
@@ -167,9 +167,9 @@ class EditItemForm(FlaskForm):
         Length(max=50, message='Brand cannot exceed 50 characters')
     ])
     
-    points_required = IntegerField('Points Required', validators=[
-        DataRequired(message='Points required is mandatory'),
-        NumberRange(min=1, max=100, message='Points must be between 1 and 100')
+    quantity = IntegerField('Quantity', validators=[
+        DataRequired(message='Quantity is required'),
+        NumberRange(min=1, max=50, message='Quantity must be between 1 and 50')
     ])
     
     media_file = FileField('Upload New Image or Video (optional)', validators=[

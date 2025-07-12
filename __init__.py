@@ -97,7 +97,7 @@ def create_app(config):
     # Set explicit paths for templates and static files
     basedir = os.path.abspath(os.path.dirname(__file__))
     template_folder = os.path.join(basedir, 'templates')
-    static_folder = os.path.join(basedir, 'static_landing_site')
+    static_folder = os.path.join(basedir, 'static')
 
     app = Flask(__name__,
                 template_folder=template_folder,
