@@ -28,6 +28,25 @@
 
   {% include 'includes/navigation.html' %}
 
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'primary' if category == 'info' else 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{{ 'info-circle' if category == 'info' else 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <header class="header-2">
     <div class="page-header min-vh-75 relative" style="background-image: url('/static/assets/img/bg2.jpg')">
       <span class="mask bg-gradient-primary opacity-4"></span>
@@ -47,15 +66,15 @@
             </div>
             {% else %}
             <div class="mt-4">
-              {% if current_user.is_admin %}
-              <a href="{{ url_for('admin.dashboard') }}" class="btn btn-white btn-lg">
-                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
-              </a>
-              {% else %}
-              <a href="{{ url_for('user.dashboard') }}" class="btn btn-white btn-lg">
-                <i class="fas fa-user-circle me-2"></i>Go to Dashboard
-              </a>
-              {% endif %}
+              <div class="alert alert-success" style="background: rgba(255, 255, 255, 0.9); border: none; border-radius: 12px;">
+                <h5 class="text-dark mb-2">
+                  <i class="fas fa-heart text-success me-2"></i>
+                  Welcome back, {{ current_user.username }}!
+                </h5>
+                <p class="text-dark mb-0">
+                  Ready to explore sustainable fashion? Let's make a difference together!
+                </p>
+              </div>
             </div>
             {% endif %}
           </div>
@@ -242,7 +261,7 @@
               </a>
               {% else %}
               <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary btn-lg mb-3">
-                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
               </a>
               {% endif %}
             </div>
@@ -272,6 +291,72 @@
   <!--  Google Maps Plugin    -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
   <script src="/static/assets/js/material-kit.min.js?v=3.0.0" type="text/javascript"></script>
+  
+  <!-- Logout Confirmation Popup -->
+  <script>
+    function confirmLogout() {
+      // Create a custom styled confirmation modal
+      const modalHtml = `
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+              <div class="modal-header border-0 text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-white w-100" id="logoutModalLabel">
+                  <i class="fas fa-sign-out-alt me-2"></i>Confirm Logout
+                </h5>
+              </div>
+              <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                  <i class="fas fa-question-circle text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <h6 class="mb-3">Are you sure you want to sign out?</h6>
+                <p class="text-muted mb-0">You will need to sign in again to access your account.</p>
+              </div>
+              <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+                  <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-danger" onclick="performLogout()">
+                  <i class="fas fa-sign-out-alt me-1"></i>Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Remove existing modal if any
+      const existingModal = document.getElementById('logoutModal');
+      if (existingModal) {
+        existingModal.remove();
+      }
+      
+      // Add modal to body
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+      modal.show();
+      
+      // Remove modal from DOM when hidden
+      document.getElementById('logoutModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+      });
+    }
+    
+    function performLogout() {
+      // Show loading state
+      const logoutBtn = document.querySelector('#logoutModal .btn-danger');
+      logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Signing out...';
+      logoutBtn.disabled = true;
+      
+      // Redirect to logout URL after a short delay for user feedback
+      setTimeout(() => {
+        window.location.href = "{{ url_for('auth.logout') }}";
+      }, 500);
+    }
+  </script>
+  
   <script type="text/javascript">
     if (document.getElementById('state1')) {
       const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
@@ -298,8 +383,8 @@
       };
     }
   </script>
-
 </body>
+
 </html>
 
   <header class="header-2">
@@ -691,355 +776,6 @@
                 </a>
               </div>
               <div class="col-md-4 mt-md-0 mt-4">
-                <a href="javascript:;">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <div class="position-absolute top-0 end-0 p-2 z-index-1">
-                      <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <g id="lock-black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                          <circle id="Oval" fill="#1F2937" cx="12" cy="12" r="12"></circle>
-                          <g id="padlock" transform="translate(7.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                            <path d="M5,0 C3.16666667,0 1.66666667,1.5 1.66666667,3.33333333 L1.66666667,4.58333333 C0.666666667,5.5 0,6.83333333 0,8.33333333 C0,11.0833333 2.25,13.3333333 5,13.3333333 C7.75,13.3333333 10,11.0833333 10,8.33333333 C10,6.83333333 9.33333333,5.5 8.33333333,4.58333333 L8.33333333,3.33333333 C8.33333333,1.5 6.83333333,0 5,0 Z M5.83333333,8.91666667 L5.83333333,10.8333333 L4.16666667,10.8333333 L4.16666667,8.91666667 C3.66666667,8.66666667 3.33333333,8.08333333 3.33333333,7.5 C3.33333333,6.58333333 4.08333333,5.83333333 5,5.83333333 C5.91666667,5.83333333 6.66666667,6.58333333 6.66666667,7.5 C6.66666667,8.08333333 6.33333333,8.66666667 5.83333333,8.91666667 Z M6.66666667,3.66666667 C6.16666667,3.41666667 5.58333333,3.33333333 5,3.33333333 C4.41666667,3.33333333 3.83333333,3.41666667 3.33333333,3.66666667 L3.33333333,3.33333333 C3.33333333,2.41666667 4.08333333,1.66666667 5,1.66666667 C5.91666667,1.66666667 6.66666667,2.41666667 6.66666667,3.33333333 L6.66666667,3.66666667 Z"></path>
-                          </g>
-                        </g>
-                      </svg>
-                    </div>
-                    <img class="w-100 my-auto opacity-6" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/content-sections.jpg" data-bs-toggle="tooltip" data-bs-placement="top" title="Pro Element" alt="content sections">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Content Sections</h6>
-                    <p class="text-secondary text-sm">8 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row pt-lg-6">
-          <div class="col-lg-3">
-            <div class="position-sticky pb-lg-5 pb-3 mt-lg-0 mt-5 ps-2" style="top: 100px">
-              <h3>Navigation</h3>
-              <h6 class="text-secondary font-weight-normal pe-3">30+ components that will help go through the pages</h6>
-            </div>
-          </div>
-          <div class="col-lg-9">
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <a href="/ui-navigation-navbars.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 m-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/navbars.jpg" alt="navbars">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Navbars</h6>
-                    <p class="text-secondary text-sm">4 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-navigation-nav-tabs.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 m-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/nav-tabs.jpg" alt="navtabs">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Nav Tabs</h6>
-                    <p class="text-secondary text-sm">2 Nav Tabs</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-navigation-pagination.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 m-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/pagination.jpg" alt="pagination">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Pagination</h6>
-                    <p class="text-secondary text-sm">3 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row pt-lg-6">
-          <div class="col-lg-3">
-            <div class="position-sticky pb-lg-5 pb-3 mt-lg-0 mt-5 ps-2" style="top: 100px">
-              <h3>Input Areas</h3>
-              <h6 class="text-secondary font-weight-normal pe-3">50+ elements that you need for text manipulation and insertion</h6>
-            </div>
-          </div>
-          <div class="col-lg-9">
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <a href="javascript:;">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <div class="position-absolute top-0 end-0 p-2 z-index-1">
-                      <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <g id="lock-black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                          <circle id="Oval" fill="#1F2937" cx="12" cy="12" r="12"></circle>
-                          <g id="padlock" transform="translate(7.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                            <path d="M5,0 C3.16666667,0 1.66666667,1.5 1.66666667,3.33333333 L1.66666667,4.58333333 C0.666666667,5.5 0,6.83333333 0,8.33333333 C0,11.0833333 2.25,13.3333333 5,13.3333333 C7.75,13.3333333 10,11.0833333 10,8.33333333 C10,6.83333333 9.33333333,5.5 8.33333333,4.58333333 L8.33333333,3.33333333 C8.33333333,1.5 6.83333333,0 5,0 Z M5.83333333,8.91666667 L5.83333333,10.8333333 L4.16666667,10.8333333 L4.16666667,8.91666667 C3.66666667,8.66666667 3.33333333,8.08333333 3.33333333,7.5 C3.33333333,6.58333333 4.08333333,5.83333333 5,5.83333333 C5.91666667,5.83333333 6.66666667,6.58333333 6.66666667,7.5 C6.66666667,8.08333333 6.33333333,8.66666667 5.83333333,8.91666667 Z M6.66666667,3.66666667 C6.16666667,3.41666667 5.58333333,3.33333333 5,3.33333333 C4.41666667,3.33333333 3.83333333,3.41666667 3.33333333,3.66666667 L3.33333333,3.33333333 C3.33333333,2.41666667 4.08333333,1.66666667 5,1.66666667 C5.91666667,1.66666667 6.66666667,2.41666667 6.66666667,3.33333333 L6.66666667,3.66666667 Z"></path>
-                          </g>
-                        </g>
-                      </svg>
-                    </div>
-                    <img class="w-100 my-auto opacity-6" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/newsletters.jpg" data-bs-toggle="tooltip" data-bs-placement="top" title="Pro Element" alt="newsletter">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Newsletters</h6>
-                    <p class="text-secondary text-sm">6 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="javascript:;">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <div class="position-absolute top-0 end-0 p-2 z-index-1">
-                      <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <g id="lock-black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                          <circle id="Oval" fill="#1F2937" cx="12" cy="12" r="12"></circle>
-                          <g id="padlock" transform="translate(7.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                            <path d="M5,0 C3.16666667,0 1.66666667,1.5 1.66666667,3.33333333 L1.66666667,4.58333333 C0.666666667,5.5 0,6.83333333 0,8.33333333 C0,11.0833333 2.25,13.3333333 5,13.3333333 C7.75,13.3333333 10,11.0833333 10,8.33333333 C10,6.83333333 9.33333333,5.5 8.33333333,4.58333333 L8.33333333,3.33333333 C8.33333333,1.5 6.83333333,0 5,0 Z M5.83333333,8.91666667 L5.83333333,10.8333333 L4.16666667,10.8333333 L4.16666667,8.91666667 C3.66666667,8.66666667 3.33333333,8.08333333 3.33333333,7.5 C3.33333333,6.58333333 4.08333333,5.83333333 5,5.83333333 C5.91666667,5.83333333 6.66666667,6.58333333 6.66666667,7.5 C6.66666667,8.08333333 6.33333333,8.66666667 5.83333333,8.91666667 Z M6.66666667,3.66666667 C6.16666667,3.41666667 5.58333333,3.33333333 5,3.33333333 C4.41666667,3.33333333 3.83333333,3.41666667 3.33333333,3.66666667 L3.33333333,3.33333333 C3.33333333,2.41666667 4.08333333,1.66666667 5,1.66666667 C5.91666667,1.66666667 6.66666667,2.41666667 6.66666667,3.33333333 L6.66666667,3.66666667 Z"></path>
-                          </g>
-                        </g>
-                      </svg>
-                    </div>
-                    <img class="w-100 m-auto opacity-6" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/contact-sections.jpg" data-bs-toggle="tooltip" data-bs-placement="top" title="Pro Element" alt="contact sections">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Contact Sections</h6>
-                    <p class="text-secondary text-sm">8 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-input-forms.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 m-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/forms.jpg" alt="forms">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Forms</h6>
-                    <p class="text-secondary text-sm">3 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <a href="/ui-input-inputs.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/inputs.jpg" alt="inputs">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Inputs</h6>
-                    <p class="text-secondary text-sm">6 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row pt-lg-6">
-          <div class="col-lg-3">
-            <div class="position-sticky pb-lg-5 pb-3 mt-lg-0 mt-5 ps-2" style="top: 100px">
-              <h3>Attention Catchers</h3>
-              <h6 class="text-secondary font-weight-normal pe-3">20+ Fully coded components that popup from different places of the screen</h6>
-            </div>
-          </div>
-          <div class="col-lg-9">
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <a href="/ui-catchers-alerts.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/alerts.jpg" alt="alerts">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Alerts</h6>
-                    <p class="text-secondary text-sm">4 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="javascript:;">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <div class="position-absolute top-0 end-0 p-2 z-index-1">
-                      <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <g id="lock-black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                          <circle id="Oval" fill="#1F2937" cx="12" cy="12" r="12"></circle>
-                          <g id="padlock" transform="translate(7.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                            <path d="M5,0 C3.16666667,0 1.66666667,1.5 1.66666667,3.33333333 L1.66666667,4.58333333 C0.666666667,5.5 0,6.83333333 0,8.33333333 C0,11.0833333 2.25,13.3333333 5,13.3333333 C7.75,13.3333333 10,11.0833333 10,8.33333333 C10,6.83333333 9.33333333,5.5 8.33333333,4.58333333 L8.33333333,3.33333333 C8.33333333,1.5 6.83333333,0 5,0 Z M5.83333333,8.91666667 L5.83333333,10.8333333 L4.16666667,10.8333333 L4.16666667,8.91666667 C3.66666667,8.66666667 3.33333333,8.08333333 3.33333333,7.5 C3.33333333,6.58333333 4.08333333,5.83333333 5,5.83333333 C5.91666667,5.83333333 6.66666667,6.58333333 6.66666667,7.5 C6.66666667,8.08333333 6.33333333,8.66666667 5.83333333,8.91666667 Z M6.66666667,3.66666667 C6.16666667,3.41666667 5.58333333,3.33333333 5,3.33333333 C4.41666667,3.33333333 3.83333333,3.41666667 3.33333333,3.66666667 L3.33333333,3.33333333 C3.33333333,2.41666667 4.08333333,1.66666667 5,1.66666667 C5.91666667,1.66666667 6.66666667,2.41666667 6.66666667,3.33333333 L6.66666667,3.66666667 Z"></path>
-                          </g>
-                        </g>
-                      </svg>
-                    </div>
-                    <img class="w-100 my-auto opacity-6" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/toasts.jpg" data-bs-toggle="tooltip" data-bs-placement="top" title="Pro Element" alt="notifications">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Notifications</h6>
-                    <p class="text-secondary text-sm">3 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-catchers-tooltips-popovers.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/popovers.jpg" alt="tooltip_popover">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Tooltips & Popovers</h6>
-                    <p class="text-secondary text-sm">2 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-md-4 mt-md-0 mt-3">
-                <a href="/ui-catchers-modals.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/modals.jpg" alt="modals">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Modals</h6>
-                    <p class="text-secondary text-sm">5 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-3">
-            <div class="position-sticky pb-lg-5 pb-3 mt-lg-0 mt-5 ps-2" style="top: 100px">
-              <h3>Elements</h3>
-              <h6 class="text-secondary font-weight-normal pe-3">80+ carefully crafted small elements that come with multiple colors and shapes</h6>
-            </div>
-          </div>
-          <div class="col-lg-9">
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <a href="/ui-elements-buttons.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/buttons.jpg" alt="buttons">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Buttons</h6>
-                    <p class="text-secondary text-sm">6 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-elements-avatars.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/avatars.jpg" alt="avatars">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Avatars</h6>
-                    <p class="text-secondary text-sm">2 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-elements-dropdowns.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/dropdowns.jpg" alt="dropdowns">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Dropdowns</h6>
-                    <p class="text-secondary text-sm">2 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <a href="/ui-elements-toggles.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/switch.jpg" alt="toggles">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Toggles</h6>
-                    <p class="text-secondary text-sm">2 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="javascript:;">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <div class="position-absolute top-0 end-0 p-2 z-index-1">
-                      <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <g id="lock-black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                          <circle id="Oval" fill="#1F2937" cx="12" cy="12" r="12"></circle>
-                          <g id="padlock" transform="translate(7.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                            <path d="M5,0 C3.16666667,0 1.66666667,1.5 1.66666667,3.33333333 L1.66666667,4.58333333 C0.666666667,5.5 0,6.83333333 0,8.33333333 C0,11.0833333 2.25,13.3333333 5,13.3333333 C7.75,13.3333333 10,11.0833333 10,8.33333333 C10,6.83333333 9.33333333,5.5 8.33333333,4.58333333 L8.33333333,3.33333333 C8.33333333,1.5 6.83333333,0 5,0 Z M5.83333333,8.91666667 L5.83333333,10.8333333 L4.16666667,10.8333333 L4.16666667,8.91666667 C3.66666667,8.66666667 3.33333333,8.08333333 3.33333333,7.5 C3.33333333,6.58333333 4.08333333,5.83333333 5,5.83333333 C5.91666667,5.83333333 6.66666667,6.58333333 6.66666667,7.5 C6.66666667,8.08333333 6.33333333,8.66666667 5.83333333,8.91666667 Z M6.66666667,3.66666667 C6.16666667,3.41666667 5.58333333,3.33333333 5,3.33333333 C4.41666667,3.33333333 3.83333333,3.41666667 3.33333333,3.66666667 L3.33333333,3.33333333 C3.33333333,2.41666667 4.08333333,1.66666667 5,1.66666667 C5.91666667,1.66666667 6.66666667,2.41666667 6.66666667,3.33333333 L6.66666667,3.66666667 Z"></path>
-                          </g>
-                        </g>
-                      </svg>
-                    </div>
-                    <img class="w-100 my-auto opacity-6" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/social-buttons.jpg" data-bs-toggle="tooltip" data-bs-placement="top" title="Pro Element" alt="social buttons">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Social Buttons</h6>
-                    <p class="text-secondary text-sm">2 Examples</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="javascript:;">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <div class="position-absolute top-0 end-0 p-2 z-index-1">
-                      <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                        <g id="lock-black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                          <circle id="Oval" fill="#1F2937" cx="12" cy="12" r="12"></circle>
-                          <g id="padlock" transform="translate(7.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                            <path d="M5,0 C3.16666667,0 1.66666667,1.5 1.66666667,3.33333333 L1.66666667,4.58333333 C0.666666667,5.5 0,6.83333333 0,8.33333333 C0,11.0833333 2.25,13.3333333 5,13.3333333 C7.75,13.3333333 10,11.0833333 10,8.33333333 C10,6.83333333 9.33333333,5.5 8.33333333,4.58333333 L8.33333333,3.33333333 C8.33333333,1.5 6.83333333,0 5,0 Z M5.83333333,8.91666667 L5.83333333,10.8333333 L4.16666667,10.8333333 L4.16666667,8.91666667 C3.66666667,8.66666667 3.33333333,8.08333333 3.33333333,7.5 C3.33333333,6.58333333 4.08333333,5.83333333 5,5.83333333 C5.91666667,5.83333333 6.66666667,6.58333333 6.66666667,7.5 C6.66666667,8.08333333 6.33333333,8.66666667 5.83333333,8.91666667 Z M6.66666667,3.66666667 C6.16666667,3.41666667 5.58333333,3.33333333 5,3.33333333 C4.41666667,3.33333333 3.83333333,3.41666667 3.33333333,3.66666667 L3.33333333,3.33333333 C3.33333333,2.41666667 4.08333333,1.66666667 5,1.66666667 C5.91666667,1.66666667 6.66666667,2.41666667 6.66666667,3.33333333 L6.66666667,3.66666667 Z"></path>
-                          </g>
-                        </g>
-                      </svg>
-                    </div>
-                    <img class="w-100 my-auto opacity-6" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/button-groups.jpg" data-bs-toggle="tooltip" data-bs-placement="top" title="Pro Element" alt="button groups">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Button Groups</h6>
-                    <p class="text-secondary text-sm">5 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-md-4 mt-md-0 mt-3">
-                <a href="/ui-elements-breadcrumbs.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/breadcrumbs.jpg" alt="breadcrumbs">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Breadcrumbs</h6>
-                    <p class="text-secondary text-sm">1 Example</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-elements-badges.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/badges.jpg" alt="badges">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Badges</h6>
-                    <p class="text-secondary text-sm">3 Example</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-md-4 mt-md-0 mt-4">
-                <a href="/ui-elements-progress-bars.html">
-                  <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
-                    <img class="w-100 my-auto" src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/progress.jpg" alt="progress">
-                  </div>
-                  <div class="mt-2 ms-2">
-                    <h6 class="mb-0">Progress Bars</h6>
-                    <p class="text-secondary text-sm">4 Examples</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="row mt-3">
-              <div class="col-md-4 mt-md-0 mt-3">
                 <a href="javascript:;">
                   <div class="card shadow-lg move-on-hover min-height-160 min-height-160">
                     <div class="position-absolute top-0 end-0 p-2 z-index-1">
@@ -1567,6 +1303,72 @@
   <!--  Google Maps Plugin    -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
   <script src="/static/assets/js/material-kit.min.js?v=3.0.0" type="text/javascript"></script>
+  
+  <!-- Logout Confirmation Popup -->
+  <script>
+    function confirmLogout() {
+      // Create a custom styled confirmation modal
+      const modalHtml = `
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+              <div class="modal-header border-0 text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title text-white w-100" id="logoutModalLabel">
+                  <i class="fas fa-sign-out-alt me-2"></i>Confirm Logout
+                </h5>
+              </div>
+              <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                  <i class="fas fa-question-circle text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <h6 class="mb-3">Are you sure you want to sign out?</h6>
+                <p class="text-muted mb-0">You will need to sign in again to access your account.</p>
+              </div>
+              <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+                  <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-danger" onclick="performLogout()">
+                  <i class="fas fa-sign-out-alt me-1"></i>Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Remove existing modal if any
+      const existingModal = document.getElementById('logoutModal');
+      if (existingModal) {
+        existingModal.remove();
+      }
+      
+      // Add modal to body
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+      modal.show();
+      
+      // Remove modal from DOM when hidden
+      document.getElementById('logoutModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+      });
+    }
+    
+    function performLogout() {
+      // Show loading state
+      const logoutBtn = document.querySelector('#logoutModal .btn-danger');
+      logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Signing out...';
+      logoutBtn.disabled = true;
+      
+      // Redirect to logout URL after a short delay for user feedback
+      setTimeout(() => {
+        window.location.href = "{{ url_for('auth.logout') }}";
+      }, 500);
+    }
+  </script>
+  
   <script type="text/javascript">
     if (document.getElementById('state1')) {
       const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));

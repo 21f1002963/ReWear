@@ -73,15 +73,15 @@ def register():
                     flash('Email already registered. Please use a different email.', 'error')
                 return render_template('accounts/register.html', form=form)
 
-            # Create new user
+            # Create new user with simplified fields
             user = User(
                 username=form.username.data,
                 email=form.email.data,
                 password=form.password.data,
-                first_name=form.first_name.data,
-                last_name=form.last_name.data,
-                phone_number=form.phone_number.data,
-                address=form.address.data
+                first_name=form.first_name.data or form.username.data,  # Use username as first name if not provided
+                last_name=form.last_name.data or '',  # Empty if not provided
+                phone_number=form.phone_number.data or '',  # Empty if not provided
+                address=form.address.data or ''  # Empty if not provided
             )
 
             db.session.add(user)
@@ -104,7 +104,6 @@ def register():
 def logout():
     """User logout route"""
     logout_user()
-    flash('You have been logged out successfully.', 'info')
     return redirect(url_for('home_blueprint.home'))
 
 @auth_bp.route('/profile', methods=['GET', 'POST'])

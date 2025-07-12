@@ -1,6 +1,6 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} Sign IN {% endblock %} 
+{% block title %} Sign IN {% endblock %}
 
 {% block body_class %} sign-in-basic {% endblock %}
 
@@ -9,8 +9,8 @@
 
 {% block content %}
 
-  {% include 'includes/navigation-transparent.html' %} 
-  
+  {% include 'includes/navigation-transparent.html' %}
+
   <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');" loading="lazy">
     <span class="mask bg-gradient-dark opacity-6"></span>
     <div class="container my-auto">
@@ -40,9 +40,22 @@
               </div>
             </div>
             <div class="card-body">
+              <!-- Flash Messages -->
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                      <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                      {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+              
               <form method="post" action="{{ url_for('auth.login') }}" role="form" class="text-start">
                 {{ form.hidden_tag() }}
-                
+
                 <div class="input-group input-group-outline my-3">
                   <label class="form-label">Email</label>
                   {{ form.email(class="form-control") }}
@@ -52,7 +65,7 @@
                     {% for error in form.email.errors %}{{ error }}{% endfor %}
                   </div>
                 {% endif %}
-                
+
                 <div class="input-group input-group-outline mb-3">
                   <label class="form-label">Password</label>
                   {{ form.password(class="form-control") }}
@@ -62,16 +75,16 @@
                     {% for error in form.password.errors %}{{ error }}{% endfor %}
                   </div>
                 {% endif %}
-                
+
                 <div class="form-check form-switch d-flex align-items-center mb-3">
                   {{ form.remember_me(class="form-check-input", type="checkbox", id="rememberMe") }}
                   <label class="form-check-label mb-0 ms-2" for="rememberMe">Remember me</label>
                 </div>
-                
+
                 <div class="text-center">
                   <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Sign in</button>
                 </div>
-                
+
                 <p class="mt-4 text-sm text-center">
                   Don't have an account?
                   <a href="{{ url_for('auth.register') }}" class="text-primary text-gradient font-weight-bold">Sign UP</a>
@@ -83,7 +96,7 @@
       </div>
     </div>
 
-    {% include 'includes/footer-auth.html' %} 
+    {% include 'includes/footer-auth.html' %}
 
   </div>
 
@@ -96,11 +109,11 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Get all input groups with outline
     const inputGroups = document.querySelectorAll('.input-group-outline');
-    
+
     inputGroups.forEach(function(group) {
       const input = group.querySelector('.form-control');
       const label = group.querySelector('.form-label');
-      
+
       if (input && label) {
         // Check if input has value on page load
         function checkInputValue() {
@@ -110,20 +123,20 @@
             group.classList.remove('is-focused');
           }
         }
-        
+
         // Check on page load
         checkInputValue();
-        
+
         // Add focus event listener
         input.addEventListener('focus', function() {
           group.classList.add('is-focused');
         });
-        
+
         // Add blur event listener
         input.addEventListener('blur', function() {
           checkInputValue();
         });
-        
+
         // Add input event listener for real-time checking
         input.addEventListener('input', function() {
           checkInputValue();

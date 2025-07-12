@@ -347,12 +347,22 @@
             </ul>
           </li>
           {% if current_user.is_authenticated %}
+            <li class="nav-item my-auto ms-2">
+              <span class="text-sm font-weight-bold text-white me-2">Welcome, {{ current_user.username }}!</span>
+            </li>
+            <li class="nav-item my-auto ms-3 ms-lg-0">
+              <a href="{{ url_for('admin.dashboard') if current_user.is_admin else url_for('user.dashboard') }}" class="btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0">Dashboard</a>
+            </li>
             <li class="nav-item ms-lg-auto">
               <a class="nav-link nav-link-icon me-2"
                 href="{{ url_for('auth.logout') }}">
                 <i class="fa fa-sign-out me-1"></i>
                 <p class="d-inline text-sm z-index-1 font-weight-bold" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign OUT">Logout</p>
               </a>
+            </li>
+          {% else %}
+            <li class="nav-item my-auto ms-3 ms-lg-0">
+              <a href="{{ url_for('auth.login') }}" class="btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0">Sign In</a>
             </li>
           {% endif %}
 

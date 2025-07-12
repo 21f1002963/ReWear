@@ -117,11 +117,11 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Get all input groups with outline
     const inputGroups = document.querySelectorAll('.input-group-outline');
-    
+
     inputGroups.forEach(function(group) {
       const input = group.querySelector('.form-control');
       const label = group.querySelector('.form-label');
-      
+
       if (input && label) {
         // Check if input has value on page load
         function checkInputValue() {
@@ -131,20 +131,20 @@
             group.classList.remove('is-focused');
           }
         }
-        
+
         // Check on page load
         checkInputValue();
-        
+
         // Add focus event listener
         input.addEventListener('focus', function() {
           group.classList.add('is-focused');
         });
-        
+
         // Add blur event listener
         input.addEventListener('blur', function() {
           checkInputValue();
         });
-        
+
         // Add input event listener for real-time checking
         input.addEventListener('input', function() {
           checkInputValue();

@@ -27,7 +27,7 @@ class LoginForm(FlaskForm):
         pass
 
 class RegisterForm(FlaskForm):
-    """Form for user registration"""
+    """Form for user registration - simplified version"""
     username = StringField('Username',
                           validators=[DataRequired(), Length(min=3, max=20)],
                           render_kw={"placeholder": "", "class": "form-control"})
@@ -36,12 +36,17 @@ class RegisterForm(FlaskForm):
                        validators=[DataRequired(), Email()],
                        render_kw={"placeholder": "", "class": "form-control"})
 
+    password = PasswordField('Password',
+                            validators=[DataRequired(), Length(min=6)],
+                            render_kw={"placeholder": "", "class": "form-control"})
+
+    # Optional fields for future profile completion
     first_name = StringField('First Name',
-                            validators=[DataRequired(), Length(min=2, max=50)],
+                            validators=[Optional(), Length(min=2, max=50)],
                             render_kw={"placeholder": "", "class": "form-control"})
 
     last_name = StringField('Last Name',
-                           validators=[DataRequired(), Length(min=2, max=50)],
+                           validators=[Optional(), Length(min=2, max=50)],
                            render_kw={"placeholder": "", "class": "form-control"})
 
     phone_number = StringField('Phone Number',
@@ -53,12 +58,8 @@ class RegisterForm(FlaskForm):
                            render_kw={"placeholder": "Enter your address (optional)",
                                      "class": "form-control", "rows": 3})
 
-    password = PasswordField('Password',
-                            validators=[DataRequired(), Length(min=6)],
-                            render_kw={"placeholder": "", "class": "form-control"})
-
     confirm_password = PasswordField('Confirm Password',
-                                    validators=[DataRequired(), EqualTo('password', message='Passwords must match')],
+                                    validators=[Optional(), EqualTo('password', message='Passwords must match')],
                                     render_kw={"placeholder": "Confirm your password", "class": "form-control"})
 
     def validate_username(self, username):
