@@ -13,13 +13,31 @@ python -m pip install --upgrade pip
 echo "📋 Installing dependencies from requirements.txt..."
 pip install --no-cache-dir -r requirements.txt
 
-# Verify basic installation
-echo "🔍 Verifying basic installation..."
+# Verify installations
+echo "🔍 Verifying installations..."
 python -c "
-import flask
-import gunicorn
-print('✅ Core packages imported successfully')
-print(f'Flask version: {flask.__version__}')
+import sys
+
+required = [
+    'flask', 'flask_login', 'flask_sqlalchemy', 'flask_migrate',
+    'flask_wtf', 'flask_bcrypt', 'gunicorn', 'psycopg2'
+]
+
+print('Checking required packages...')
+missing = []
+for pkg in required:
+    try:
+        __import__(pkg)
+        print(f'✅ {pkg} - OK')
+    except ImportError:
+        missing.append(pkg)
+        print(f'❌ {pkg} - MISSING')
+
+if missing:
+    print(f'❌ Missing packages: {missing}')
+    sys.exit(1)
+else:
+    print('✅ All required packages installed successfully')
 "
 
 # Initialize database
