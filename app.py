@@ -8,7 +8,8 @@ from config import config_dict
 from __init__ import create_app, db
 
 # WARNING: Don't run with debug turned on in production!
-DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+DEBUG = True  # Force debug mode on
+# DEBUG = (os.getenv('DEBUG', 'False') == 'True')  # Alternative: use environment variable
 
 # The configuration
 get_config_mode = 'Debug' if DEBUG else 'Production'

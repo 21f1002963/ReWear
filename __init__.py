@@ -22,6 +22,7 @@ def register_extensions(app):
     # Configure Flask-Login
     login_manager.login_view = 'home_blueprint.home'  # Redirect to home page for now
     login_manager.login_message_category = 'info'
+    login_manager.login_message = 'Please log in to access this page.'
 
     # User loader callback
     @login_manager.user_loader
@@ -29,6 +30,14 @@ def register_extensions(app):
         # For now, return None since we don't have User model yet
         # This will be updated when you add authentication
         return None
+    
+    # Handle unauthorized access
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        # For now, just redirect to home page instead of causing errors
+        from flask import redirect, url_for, flash
+        flash('Please log in to access this page.', 'info')
+        return redirect(url_for('home_blueprint.home'))
 
 
 def register_blueprints(app):
