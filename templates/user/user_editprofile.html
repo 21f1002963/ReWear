@@ -1,0 +1,208 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Edit Profile - User | ReWear{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrapper {
+    background: #fff;
+    background-image: none;
+  }
+  .auth-wrapper::before {
+    display: none;
+  }
+  .profile-card {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  .profile-card:hover {
+    transform: translateY(-5px);
+  }
+  .profile-header {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    color: white;
+    padding: 1.0rem;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+  }
+
+  .form-floating > .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 1.5rem 1rem 0.5rem;
+    height: 60px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  /* Consistent styling for all form controls */
+  .form-floating > textarea.form-control {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .form-floating > label {
+    padding: 1rem 0.75rem 0rem;
+  }
+  .form-floating > textarea.form-control {
+    height: 90px;
+  }
+  .form-floating > .form-control:focus {
+    border-color: #3a7bd5;
+    box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.25);
+  }
+  .input-group-text {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    color: #6c757d;
+  }
+  .form-floating > .form-control {
+    border-radius: 0 10px 10px 0;
+  }
+  .btn-save {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58, 123, 213, 0.3);
+  }
+  .btn-cancel {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-cancel:hover {
+    background: #e9ecef;
+  }
+  .form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  .readonly-field {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+  }
+  .footer {
+    margin-top: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card profile-card border-0">
+                <div class="profile-header">
+                    <h3 class="mb-0">Edit Profile</h3>
+                    <p class="mb-0">Update your personal information</p>
+                </div>
+                <div class="card-body p-3">
+                    <form method="POST" action="{{ url_for('user.edit_profile') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        {{ form.first_name(class="form-control", id="first_name") }}
+                                        <label for="first_name">First Name</label>
+                                    </div>
+                                </div>
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        {{ form.last_name(class="form-control", id="last_name") }}
+                                        <label for="last_name">Last Name</label>
+                                    </div>
+                                </div>
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="email" class="form-control readonly-field" id="email" name="email" value="{{ current_user.email }}" required readonly>
+                                        <label for="email">Email</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-phone"></i>
+                                    </span>
+                                    <div class="form-floating flex-grow-1">
+                                        {{ form.phone_number(class="form-control", id="phone_number", placeholder="Enter your phone number") }}
+                                        <label for="phone_number">Phone Number</label>
+                                    </div>
+                                </div>
+                                {% if form.phone_number.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.phone_number.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </span>
+                                <div class="form-floating flex-grow-1">
+                                    {{ form.address(class="form-control", id="address", rows="3", style="height: 90px; padding-top: 25px;") }}
+                                    <label for="address">Address</label>
+                                </div>
+                            </div>
+                            {% if form.address.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.address.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-2">
+                            <a href="{{ url_for('user.dashboard') }}" class="btn btn-cancel">Cancel</a>
+                            <button type="submit" class="btn btn-save text-white">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

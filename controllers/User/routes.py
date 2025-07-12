@@ -7,6 +7,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from __init__ import db
 from models.user import User
+from forms.auth_forms import ProfileForm
 
 # Create the user blueprint
 user_bp = Blueprint('user', __name__, url_prefix='/user')
@@ -33,3 +34,37 @@ def dashboard():
 def profile():
     """Redirect to auth profile route"""
     return redirect(url_for('auth.profile'))
+
+@user_bp.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    """User edit profile route"""
+    if current_user.is_admin:
+        return redirect(url_for('admin.edit_profile'))
+    
+    form = ProfileForm()
+    
+    if form.validate_on_submit():
+        try:
+            # Update user profile
+            current_user.first_name = form.first_name.data
+            current_user.last_name = form.last_name.data
+            current_user.phone_number = form.phone_number.data
+            current_user.address = form.address.data
+            
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('user.edit_profile'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating your profile.', 'error')
+            print(f"User profile update error: {e}")
+    
+    # Pre-populate form with current user data
+    form.first_name.data = current_user.first_name
+    form.last_name.data = current_user.last_name
+    form.phone_number.data = current_user.phone_number
+    form.address.data = current_user.address
+    
+    return render_template('user/user_editprofile.html', form=form)
