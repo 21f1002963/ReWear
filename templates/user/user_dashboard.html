@@ -192,6 +192,7 @@
     <li><a href="{{ url_for('user.dashboard') }}"><i class="fas fa-home me-2"></i>Home</a></li>
     <li><a href="{{ url_for('user.edit_profile') }}"><i class="fas fa-user-edit me-2"></i>Edit Profile</a></li>
     <li><a href="{{ url_for('user.uploaded_items') }}"><i class="fas fa-upload me-2"></i>Your Items</a></li>
+    <li><a href="{{ url_for('user.swap_history') }}"><i class="fas fa-history me-2"></i>Swap History</a></li>
     <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
   </ul>
 </nav>
@@ -295,7 +296,9 @@
               <i class="fas fa-history fa-3x mb-3"></i>
               <h5>Swap History</h5>
               <p>View past exchanges</p>
-              <button class="btn btn-light">Coming Soon</button>
+              <a href="{{ url_for('user.swap_history') }}" class="btn btn-light">
+                <i class="fas fa-history me-2"></i>View History
+              </a>
             </div>
           </div>
         </div>
@@ -317,8 +320,8 @@
             <div class="position-relative">
               {% if item.media_filename %}
                 {% if item.is_image() %}
-                  <img src="{{ item.get_media_url() }}" 
-                       class="card-img-top" 
+                  <img src="{{ item.get_media_url() }}"
+                       class="card-img-top"
                        alt="{{ item.title }}"
                        style="height: 200px; object-fit: cover;">
                 {% elif item.is_video() %}

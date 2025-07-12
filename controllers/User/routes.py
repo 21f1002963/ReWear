@@ -261,3 +261,22 @@ def delete_item(item_id):
         print(f"Delete item error: {e}")
 
     return redirect(url_for('user.uploaded_items'))
+
+@user_bp.route('/swap-history')
+@login_required
+def swap_history():
+    """User swap history route"""
+    if current_user.is_admin:
+        return redirect(url_for('admin.dashboard'))
+    
+    # For now, we'll show a placeholder since Swap model doesn't exist yet
+    # When Swap model is created, this will show actual swap history
+    swap_history_data = {
+        'completed_swaps': [],  # Will be populated when Swap model exists
+        'pending_swaps': [],    # Will be populated when Swap model exists
+        'total_swaps': 0,
+        'total_points_earned': current_user.points_balance,
+        'total_points_spent': 0  # Will be calculated when Swap model exists
+    }
+    
+    return render_template('user/user_swapHistory.html', swap_data=swap_history_data)
