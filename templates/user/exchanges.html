@@ -1,0 +1,251 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}My Exchanges - ReWear{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px 10px 0 0;">
+          <h4 class="mb-0"><i class="fas fa-handshake me-2"></i>My Exchanges</h4>
+          <p class="mb-0 mt-2 opacity-8">Manage your exchange requests and offers</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-tabs" id="exchangeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" type="button" role="tab">
+            <i class="fas fa-inbox me-2"></i>Received Requests ({{ received_exchanges|length }})
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab">
+            <i class="fas fa-paper-plane me-2"></i>Sent Requests ({{ sent_exchanges|length }})
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="exchangeTabsContent">
+        <!-- Received Exchanges -->
+        <div class="tab-pane fade show active" id="received" role="tabpanel">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              {% if received_exchanges %}
+                <div class="row">
+                  {% for exchange in received_exchanges %}
+                  <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ exchange.created_at.strftime('%b %d, %Y') }}</small>
+                        <span class="badge {% if exchange.status == 'pending' %}bg-warning{% elif exchange.status == 'accepted' %}bg-success{% elif exchange.status == 'completed' %}bg-primary{% elif exchange.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                          {{ exchange.status.title() }}
+                        </span>
+                      </div>
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          <i class="fas fa-user me-2"></i>{{ exchange.requester.username }}
+                        </h6>
+                        <p class="text-muted small mb-2">wants your:</p>
+                        <div class="d-flex align-items-center mb-3">
+                          {% if exchange.requested_item.image_filename %}
+                          <img src="{{ url_for('static', filename='uploads/' + exchange.requested_item.image_filename) }}" 
+                               class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                          {% endif %}
+                          <div>
+                            <strong>{{ exchange.requested_item.title }}</strong>
+                            <div class="small text-muted">{{ exchange.requested_item.points_value }} points</div>
+                          </div>
+                        </div>
+
+                        {% if exchange.exchange_type == 'item' and exchange.offered_item %}
+                        <p class="text-muted small mb-2">Offering:</p>
+                        <div class="d-flex align-items-center mb-3">
+                          {% if exchange.offered_item.image_filename %}
+                          <img src="{{ url_for('static', filename='uploads/' + exchange.offered_item.image_filename) }}" 
+                               class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                          {% endif %}
+                          <div>
+                            <strong>{{ exchange.offered_item.title }}</strong>
+                            <div class="small text-muted">{{ exchange.offered_item.points_value }} points</div>
+                          </div>
+                        </div>
+                        {% elif exchange.exchange_type == 'points' %}
+                        <p class="text-muted small mb-2">Offering:</p>
+                        <div class="alert alert-info py-2">
+                          <i class="fas fa-coins me-2"></i>{{ exchange.points_offered }} Points
+                        </div>
+                        {% endif %}
+
+                        {% if exchange.message %}
+                        <div class="alert alert-light py-2 mb-3">
+                          <small><i class="fas fa-comment me-2"></i>{{ exchange.message }}</small>
+                        </div>
+                        {% endif %}
+
+                        {% if exchange.status == 'pending' %}
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-success btn-sm flex-fill" onclick="respondToExchange({{ exchange.id }}, 'accept')">
+                            <i class="fas fa-check me-1"></i>Accept
+                          </button>
+                          <button class="btn btn-danger btn-sm flex-fill" onclick="respondToExchange({{ exchange.id }}, 'reject')">
+                            <i class="fas fa-times me-1"></i>Reject
+                          </button>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-center py-5">
+                  <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                  <h5 class="text-muted mt-3">No Exchange Requests</h5>
+                  <p class="text-muted">You haven't received any exchange requests yet.</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Sent Exchanges -->
+        <div class="tab-pane fade" id="sent" role="tabpanel">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              {% if sent_exchanges %}
+                <div class="row">
+                  {% for exchange in sent_exchanges %}
+                  <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card border-0 shadow-sm">
+                      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ exchange.created_at.strftime('%b %d, %Y') }}</small>
+                        <span class="badge {% if exchange.status == 'pending' %}bg-warning{% elif exchange.status == 'accepted' %}bg-success{% elif exchange.status == 'completed' %}bg-primary{% elif exchange.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                          {{ exchange.status.title() }}
+                        </span>
+                      </div>
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          <i class="fas fa-user me-2"></i>{{ exchange.owner.username }}
+                        </h6>
+                        <p class="text-muted small mb-2">You requested:</p>
+                        <div class="d-flex align-items-center mb-3">
+                          {% if exchange.requested_item.image_filename %}
+                          <img src="{{ url_for('static', filename='uploads/' + exchange.requested_item.image_filename) }}" 
+                               class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                          {% endif %}
+                          <div>
+                            <strong>{{ exchange.requested_item.title }}</strong>
+                            <div class="small text-muted">{{ exchange.requested_item.points_value }} points</div>
+                          </div>
+                        </div>
+
+                        {% if exchange.exchange_type == 'item' and exchange.offered_item %}
+                        <p class="text-muted small mb-2">You offered:</p>
+                        <div class="d-flex align-items-center mb-3">
+                          {% if exchange.offered_item.image_filename %}
+                          <img src="{{ url_for('static', filename='uploads/' + exchange.offered_item.image_filename) }}" 
+                               class="rounded me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                          {% endif %}
+                          <div>
+                            <strong>{{ exchange.offered_item.title }}</strong>
+                            <div class="small text-muted">{{ exchange.offered_item.points_value }} points</div>
+                          </div>
+                        </div>
+                        {% elif exchange.exchange_type == 'points' %}
+                        <p class="text-muted small mb-2">You offered:</p>
+                        <div class="alert alert-info py-2">
+                          <i class="fas fa-coins me-2"></i>{{ exchange.points_offered }} Points
+                        </div>
+                        {% endif %}
+
+                        {% if exchange.message %}
+                        <div class="alert alert-light py-2 mb-3">
+                          <small><i class="fas fa-comment me-2"></i>{{ exchange.message }}</small>
+                        </div>
+                        {% endif %}
+
+                        {% if exchange.status == 'pending' %}
+                        <button class="btn btn-outline-secondary btn-sm w-100" onclick="cancelExchange({{ exchange.id }})">
+                          <i class="fas fa-times me-1"></i>Cancel Request
+                        </button>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-center py-5">
+                  <i class="fas fa-paper-plane text-muted" style="font-size: 3rem;"></i>
+                  <h5 class="text-muted mt-3">No Sent Requests</h5>
+                  <p class="text-muted">You haven't sent any exchange requests yet.</p>
+                  <a href="{{ url_for('user.browse_items') }}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Browse Items
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function respondToExchange(exchangeId, action) {
+  if (!confirm(`Are you sure you want to ${action} this exchange request?`)) {
+    return;
+  }
+
+  fetch(`/user/exchange/${exchangeId}/respond`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action: action })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert(data.error || 'An error occurred');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred');
+  });
+}
+
+function cancelExchange(exchangeId) {
+  if (!confirm('Are you sure you want to cancel this exchange request?')) {
+    return;
+  }
+
+  fetch(`/user/exchange/${exchangeId}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert(data.error || 'An error occurred');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred');
+  });
+}
+</script>
+{% endblock %}

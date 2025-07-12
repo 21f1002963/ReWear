@@ -1,0 +1,554 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Browse Items - ReWear{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar for Categories -->
+    <div class="col-md-3 col-lg-2">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 100px;">
+        <div class="card-header text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px 10px 0 0;">
+          <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Categories</h6>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush">
+            <!-- All Items -->
+            <a href="{{ url_for('user.browse_items') }}" 
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ 'active' if not current_category else '' }}">
+              <span><i class="fas fa-th me-2"></i>All Items</span>
+              <span class="badge bg-primary rounded-pill">{{ items.total if items else 0 }}</span>
+            </a>
+            
+            <!-- Category Links -->
+            {% for cat_key, cat_name in category_names.items() %}
+            {% if category_counts[cat_key] > 0 %}
+            <a href="{{ url_for('user.browse_items', category=cat_key) }}" 
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ 'active' if current_category == cat_key else '' }}">
+              <span>
+                {% if cat_key == 'tops' %}
+                  <i class="fas fa-tshirt me-2"></i>
+                {% elif cat_key == 'bottoms' %}
+                  <i class="fas fa-user-tie me-2"></i>
+                {% elif cat_key == 'dresses' %}
+                  <i class="fas fa-female me-2"></i>
+                {% elif cat_key == 'outerwear' %}
+                  <i class="fas fa-jacket me-2"></i>
+                {% elif cat_key == 'shoes' %}
+                  <i class="fas fa-shoe-prints me-2"></i>
+                {% elif cat_key == 'accessories' %}
+                  <i class="fas fa-gem me-2"></i>
+                {% else %}
+                  <i class="fas fa-tag me-2"></i>
+                {% endif %}
+                {{ cat_name }}
+              </span>
+              <span class="badge bg-secondary rounded-pill">{{ category_counts[cat_key] }}</span>
+            </a>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10">
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              {% if current_category %}
+                <h3><i class="fas fa-layer-group me-2"></i>{{ category_names[current_category] }}</h3>
+                <p class="text-muted">Browsing {{ category_names[current_category].lower() }} category</p>
+              {% else %}
+                <h3><i class="fas fa-search me-2"></i>Browse All Items</h3>
+                <p class="text-muted">Discover amazing clothing items from our community</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <form method="GET" action="{{ url_for('user.browse_items', category=current_category) }}">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+              <input type="text" class="form-control" name="search" placeholder="Search items by title, description, or brand..." value="{{ search }}">
+              <button class="btn btn-primary" type="submit">Search</button>
+              {% if search %}
+                <a href="{{ url_for('user.browse_items', category=current_category) }}" class="btn btn-outline-secondary">Clear</a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Results Info -->
+      {% if search %}
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Showing {{ items.total }} result(s) for "{{ search }}"
+            {% if current_category %} in {{ category_names[current_category] }}{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Items Grid -->
+      {% if items.items %}
+      <div class="row">
+        {% for item in items.items %}
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card shadow-sm border-0 h-100" style="border-radius: 15px; overflow: hidden; transition: transform 0.2s;">
+            <div class="position-relative">
+              {% if item.media_filename %}
+                {% if item.media_type == 'image' %}
+                  <img src="{{ url_for('static', filename='uploads/items/' + item.media_filename) }}" 
+                       class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ item.title }}">
+                {% else %}
+                  <video class="card-img-top" style="height: 200px; object-fit: cover;" muted>
+                    <source src="{{ url_for('static', filename='uploads/items/' + item.media_filename) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                  <div class="position-absolute top-0 end-0 m-2">
+                    <span class="badge bg-dark"><i class="fas fa-play me-1"></i>Video</span>
+                  </div>
+                {% endif %}
+              {% else %}
+                <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                  <i class="fas fa-image fa-3x text-muted"></i>
+                </div>
+              {% endif %}
+              
+              <!-- Points Badge -->
+              <div class="position-absolute top-0 start-0 m-2">
+                <span class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <i class="fas fa-coins me-1"></i>{{ item.points_required }} pts
+                </span>
+              </div>
+            </div>
+            
+            <div class="card-body d-flex flex-column">
+              <h6 class="card-title mb-2 fw-bold">{{ item.title }}</h6>
+              {% if item.description %}
+                <p class="card-text text-muted small mb-2" style="max-height: 60px; overflow: hidden;">{{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
+              {% endif %}
+              
+              <div class="row text-center mb-3">
+                <div class="col-4">
+                  <small class="text-muted d-block">Size</small>
+                  <span class="badge bg-light text-dark">{{ item.size.upper() }}</span>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted d-block">Condition</small>
+                  <span class="badge bg-success">{{ item.condition.title() }}</span>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted d-block">Brand</small>
+                  <span class="small fw-bold">{{ item.brand or 'N/A' }}</span>
+                </div>
+              </div>
+              
+              <div class="mt-auto">
+                <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#itemModal{{ item.id }}">
+                  <i class="fas fa-eye me-1"></i>View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if items.pages > 1 %}
+      <div class="row">
+        <div class="col-12">
+          <nav aria-label="Items pagination">
+            <ul class="pagination justify-content-center">
+              {% if items.has_prev %}
+                <li class="page-item">
+                  <a class="page-link" href="{{ url_for('user.browse_items', category=current_category, page=items.prev_num, search=search) }}">Previous</a>
+                </li>
+              {% endif %}
+              
+              {% for page_num in items.iter_pages() %}
+                {% if page_num %}
+                  {% if page_num != items.page %}
+                    <li class="page-item">
+                      <a class="page-link" href="{{ url_for('user.browse_items', category=current_category, page=page_num, search=search) }}">{{ page_num }}</a>
+                    </li>
+                  {% else %}
+                    <li class="page-item active">
+                      <span class="page-link">{{ page_num }}</span>
+                    </li>
+                  {% endif %}
+                {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              
+              {% if items.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="{{ url_for('user.browse_items', category=current_category, page=items.next_num, search=search) }}">Next</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+      {% endif %}
+
+      {% else %}
+      <!-- No Items Found -->
+      <div class="row">
+        <div class="col-12 text-center">
+          <div class="py-5">
+            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No items found</h4>
+            {% if current_category %}
+              <p class="text-muted">No items available in {{ category_names[current_category].lower() }} category
+              {% if search %} matching "{{ search }}"{% endif %}</p>
+              <a href="{{ url_for('user.browse_items') }}" class="btn btn-primary">Browse All Categories</a>
+            {% else %}
+              <p class="text-muted">No items available{% if search %} matching "{{ search }}"{% endif %}</p>
+              {% if search %}
+                <a href="{{ url_for('user.browse_items') }}" class="btn btn-primary">Clear Search</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Item Detail Modals -->
+{% for item in items.items %}
+<div class="modal fade" id="itemModal{{ item.id }}" tabindex="-1" aria-labelledby="itemModalLabel{{ item.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0" style="border-radius: 15px;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
+        <h5 class="modal-title" id="itemModalLabel{{ item.id }}">
+          <i class="fas fa-tshirt me-2"></i>{{ item.title }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            {% if item.media_filename %}
+              {% if item.media_type == 'image' %}
+                <img src="{{ url_for('static', filename='uploads/items/' + item.media_filename) }}" 
+                     class="img-fluid rounded" style="width: 100%; height: 300px; object-fit: cover;" alt="{{ item.title }}">
+              {% else %}
+                <video class="img-fluid rounded" style="width: 100%; height: 300px; object-fit: cover;" controls>
+                  <source src="{{ url_for('static', filename='uploads/items/' + item.media_filename) }}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              {% endif %}
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center rounded" style="height: 300px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                <i class="fas fa-image fa-4x text-muted"></i>
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold mb-3">Item Details</h6>
+            <div class="row mb-2">
+              <div class="col-6"><strong>Category:</strong></div>
+              <div class="col-6">{{ category_names[item.category] if item.category in category_names else item.category.title() }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6"><strong>Size:</strong></div>
+              <div class="col-6">{{ item.size.upper() }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6"><strong>Condition:</strong></div>
+              <div class="col-6">{{ item.condition.title() }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6"><strong>Color:</strong></div>
+              <div class="col-6">{{ item.color or 'Not specified' }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6"><strong>Brand:</strong></div>
+              <div class="col-6">{{ item.brand or 'Not specified' }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6"><strong>Points Required:</strong></div>
+              <div class="col-6"><span class="badge bg-primary">{{ item.points_required }} points</span></div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6"><strong>Listed by:</strong></div>
+              <div class="col-6">{{ item.user.username }}</div>
+            </div>
+            
+            {% if item.description %}
+            <h6 class="fw-bold mb-2">Description</h6>
+            <p class="text-muted">{{ item.description }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exchangeModal{{ item.id }}" data-bs-dismiss="modal">
+          <i class="fas fa-handshake me-1"></i>Request Exchange
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Exchange Request Modals -->
+{% for item in items.items %}
+<!-- Exchange Request Modal for {{ item.title }} -->
+<div class="modal fade" id="exchangeModal{{ item.id }}" tabindex="-1" aria-labelledby="exchangeModalLabel{{ item.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0" style="border-radius: 15px;">
+      <div class="modal-header text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
+        <h5 class="modal-title w-100" id="exchangeModalLabel{{ item.id }}">
+          <i class="fas fa-handshake me-2"></i>Request Exchange
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Item Info -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            {% if item.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" 
+                 class="w-100 rounded" style="height: 150px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+              <i class="fas fa-image text-muted fa-3x"></i>
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <h6 class="fw-bold">{{ item.title }}</h6>
+            <p class="text-muted mb-2">by {{ item.user.username }}</p>
+            <p class="mb-2"><strong>Category:</strong> {{ item.category.title() }}</p>
+            <p class="mb-2"><strong>Points Required:</strong> {{ item.points_required }} points</p>
+            {% if item.brand %}
+            <p class="mb-2"><strong>Brand:</strong> {{ item.brand }}</p>
+            {% endif %}
+            {% if item.size %}
+            <p class="mb-0"><strong>Size:</strong> {{ item.size }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Exchange Options -->
+        <div class="card border-0 bg-light">
+          <div class="card-body">
+            <h6 class="mb-3">Choose Exchange Method</h6>
+            
+            <!-- Exchange Type Selection -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="exchangeType{{ item.id }}" 
+                         id="pointsExchange{{ item.id }}" value="points" checked>
+                  <label class="form-check-label" for="pointsExchange{{ item.id }}">
+                    <i class="fas fa-coins text-warning me-2"></i>Offer Points
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="exchangeType{{ item.id }}" 
+                         id="itemExchange{{ item.id }}" value="item">
+                  <label class="form-check-label" for="itemExchange{{ item.id }}">
+                    <i class="fas fa-tshirt text-primary me-2"></i>Offer Item
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Points Offer -->
+            <div id="pointsSection{{ item.id }}" class="exchange-section">
+              <label for="pointsOffer{{ item.id }}" class="form-label">Points to Offer</label>
+              <div class="input-group mb-3">
+                <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                <input type="number" class="form-control" id="pointsOffer{{ item.id }}" 
+                       min="1" max="{{ current_user.points_balance }}" 
+                       placeholder="Enter points (max: {{ current_user.points_balance }})">
+              </div>
+              <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Your current balance: {{ current_user.points_balance }} points
+              </small>
+            </div>
+
+            <!-- Item Offer -->
+            <div id="itemSection{{ item.id }}" class="exchange-section" style="display: none;">
+              <label for="itemOffer{{ item.id }}" class="form-label">Select Item to Offer</label>
+              <select class="form-select mb-3" id="itemOffer{{ item.id }}">
+                <option value="">Loading your items...</option>
+              </select>
+              <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Only your available items are shown
+              </small>
+            </div>
+
+            <!-- Message -->
+            <div class="mt-3">
+              <label for="exchangeMessage{{ item.id }}" class="form-label">Message (Optional)</label>
+              <textarea class="form-control" id="exchangeMessage{{ item.id }}" rows="3" 
+                        placeholder="Add a personal message to your exchange request..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitExchangeRequest({{ item.id }})">
+          <i class="fas fa-paper-plane me-1"></i>Send Request
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<style>
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.list-group-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+}
+
+@media (max-width: 768px) {
+  .sticky-top {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+</style>
+
+<script>
+// Toggle exchange type sections
+document.addEventListener('DOMContentLoaded', function() {
+  // Setup radio button listeners for each item
+  {% for item in items.items %}
+  const pointsRadio{{ item.id }} = document.getElementById('pointsExchange{{ item.id }}');
+  const itemRadio{{ item.id }} = document.getElementById('itemExchange{{ item.id }}');
+  const pointsSection{{ item.id }} = document.getElementById('pointsSection{{ item.id }}');
+  const itemSection{{ item.id }} = document.getElementById('itemSection{{ item.id }}');
+  
+  if (pointsRadio{{ item.id }} && itemRadio{{ item.id }}) {
+    pointsRadio{{ item.id }}.addEventListener('change', function() {
+      if (this.checked) {
+        pointsSection{{ item.id }}.style.display = 'block';
+        itemSection{{ item.id }}.style.display = 'none';
+      }
+    });
+    
+    itemRadio{{ item.id }}.addEventListener('change', function() {
+      if (this.checked) {
+        pointsSection{{ item.id }}.style.display = 'none';
+        itemSection{{ item.id }}.style.display = 'block';
+        loadUserItems({{ item.id }});
+      }
+    });
+  }
+  {% endfor %}
+});
+
+function loadUserItems(itemId) {
+  const select = document.getElementById(`itemOffer${itemId}`);
+  select.innerHTML = '<option value="">Loading...</option>';
+  
+  fetch('/user/api/user_items')
+    .then(response => response.json())
+    .then(items => {
+      select.innerHTML = '<option value="">Select an item to offer</option>';
+      items.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = `${item.title} (${item.points_value} points)`;
+        select.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error('Error loading items:', error);
+      select.innerHTML = '<option value="">Error loading items</option>';
+    });
+}
+
+function submitExchangeRequest(itemId) {
+  const form = {
+    exchange_type: document.querySelector(`input[name="exchangeType${itemId}"]:checked`).value,
+    message: document.getElementById(`exchangeMessage${itemId}`).value
+  };
+  
+  if (form.exchange_type === 'points') {
+    form.points_offered = parseInt(document.getElementById(`pointsOffer${itemId}`).value);
+    if (!form.points_offered || form.points_offered <= 0) {
+      alert('Please enter a valid number of points to offer.');
+      return;
+    }
+  } else if (form.exchange_type === 'item') {
+    form.offered_item_id = parseInt(document.getElementById(`itemOffer${itemId}`).value);
+    if (!form.offered_item_id) {
+      alert('Please select an item to offer.');
+      return;
+    }
+  }
+  
+  // Show loading state
+  const submitBtn = document.querySelector(`#exchangeModal${itemId} .btn-primary`);
+  const originalText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
+  submitBtn.disabled = true;
+  
+  fetch(`/user/request_exchange/${itemId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(form)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.success);
+      bootstrap.Modal.getInstance(document.getElementById(`exchangeModal${itemId}`)).hide();
+      // Reset form
+      document.getElementById(`pointsOffer${itemId}`).value = '';
+      document.getElementById(`itemOffer${itemId}`).value = '';
+      document.getElementById(`exchangeMessage${itemId}`).value = '';
+      document.getElementById(`pointsExchange${itemId}`).checked = true;
+      document.getElementById(`pointsSection${itemId}`).style.display = 'block';
+      document.getElementById(`itemSection${itemId}`).style.display = 'none';
+    } else {
+      alert(data.error || 'An error occurred while sending the request.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while sending the request.');
+  })
+  .finally(() => {
+    // Restore button state
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  });
+}
+</script>
+{% endblock %}

@@ -178,6 +178,28 @@
   .footer {
     margin-top: auto;
   }
+
+  /* Notification badge styles */
+  .slide-menu .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .notification-pulse {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+  }
 </style>
 {% endblock %}
 
@@ -192,6 +214,12 @@
     <li><a href="{{ url_for('user.dashboard') }}"><i class="fas fa-home me-2"></i>Home</a></li>
     <li><a href="{{ url_for('user.edit_profile') }}"><i class="fas fa-user-edit me-2"></i>Edit Profile</a></li>
     <li><a href="{{ url_for('user.uploaded_items') }}"><i class="fas fa-upload me-2"></i>Your Items</a></li>
+    <li><a href="{{ url_for('user.view_exchanges') }}">
+      <i class="fas fa-bell me-2"></i>Exchange Requests
+      {% if pending_requests_count > 0 %}
+        <span class="badge bg-danger rounded-pill ms-1 notification-pulse">{{ pending_requests_count }}</span>
+      {% endif %}
+    </a></li>
     <li><a href="{{ url_for('user.swap_history') }}"><i class="fas fa-history me-2"></i>Swap History</a></li>
     <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
   </ul>
@@ -306,7 +334,7 @@
     </div>
     <div class="card-body p-4">
       <div class="row">
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <div class="card h-100 text-center border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
             <div class="card-body text-white">
               <i class="fas fa-plus-circle fa-3x mb-3"></i>
@@ -318,7 +346,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
           <div class="card h-100 text-center border-0" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
             <div class="card-body text-white">
               <i class="fas fa-list fa-3x mb-3"></i>
@@ -330,7 +358,27 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4 mb-3">
+        <div class="col-md-3 mb-3">
+          <div class="card h-100 text-center border-0 position-relative" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);">
+            <div class="card-body text-white">
+              <div class="position-relative d-inline-block">
+                <i class="fas fa-bell fa-3x mb-3"></i>
+                {% if pending_requests_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-pulse" style="font-size: 0.75rem;">
+                    {{ pending_requests_count }}
+                    <span class="visually-hidden">pending requests</span>
+                  </span>
+                {% endif %}
+              </div>
+              <h5>Exchange Requests</h5>
+              <p>{% if pending_requests_count > 0 %}{{ pending_requests_count }} pending request{{ 's' if pending_requests_count != 1 else '' }}{% else %}No pending requests{% endif %}</p>
+              <a href="{{ url_for('user.view_exchanges') }}" class="btn btn-light">
+                <i class="fas fa-bell me-2"></i>View Requests
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
           <div class="card h-100 text-center border-0" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
             <div class="card-body text-white">
               <i class="fas fa-history fa-3x mb-3"></i>
@@ -380,9 +428,9 @@
                 </div>
               {% endif %}
               <span class="badge bg-success position-absolute top-0 end-0 m-2">{{ item.status.title() }}</span>
-              
+
               <!-- Moderation Status Badge -->
-              <span class="badge position-absolute top-0 start-0 m-2 
+              <span class="badge position-absolute top-0 start-0 m-2
                      {% if item.moderation_status == 'pending' %}bg-warning
                      {% elif item.moderation_status == 'approved' %}bg-success
                      {% elif item.moderation_status == 'rejected' %}bg-danger

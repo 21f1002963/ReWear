@@ -45,6 +45,14 @@
                     Categories
                   </a>
                 </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item mx-2">
+                  <a class="nav-link ps-2 d-flex cursor-pointer align-items-center" href="{{ url_for('user.browse_items') }}">
+                    <i class="material-icons opacity-6 me-2 text-md">search</i>
+                    Browse Items
+                  </a>
+                </li>
+                {% endif %}
                 <li class="nav-item mx-2">
                   <a class="nav-link ps-2 d-flex cursor-pointer align-items-center" href="#coded-pages" onclick="smoothScrollToCodedPages(event)">
                     Items

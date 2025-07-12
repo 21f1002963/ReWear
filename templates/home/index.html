@@ -386,74 +386,86 @@
         <div class="row">
           <!-- Tops Category -->
           <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
-              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <i class="fas fa-tshirt fa-3x mb-3"></i>
-                <h5 class="mb-2">Tops & Shirts</h5>
-                <p class="mb-0 small">T-shirts, blouses, sweaters, and more</p>
-                <div class="badge bg-light text-dark mt-2">8 pts avg</div>
+            <a href="{{ url_for('user.browse_items', category='tops') }}" class="text-decoration-none">
+              <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                  <i class="fas fa-tshirt fa-3x mb-3"></i>
+                  <h5 class="mb-2">Tops & Shirts</h5>
+                  <p class="mb-0 small">T-shirts, blouses, sweaters, and more</p>
+                  <div class="badge bg-light text-dark mt-2">8 pts avg</div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Bottoms Category -->
           <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
-              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                <i class="fas fa-user-tie fa-3x mb-3"></i>
-                <h5 class="mb-2">Bottoms</h5>
-                <p class="mb-0 small">Jeans, pants, skirts, and shorts</p>
-                <div class="badge bg-light text-dark mt-2">10 pts avg</div>
+            <a href="{{ url_for('user.browse_items', category='bottoms') }}" class="text-decoration-none">
+              <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                  <i class="fas fa-user-tie fa-3x mb-3"></i>
+                  <h5 class="mb-2">Bottoms</h5>
+                  <p class="mb-0 small">Jeans, pants, skirts, and shorts</p>
+                  <div class="badge bg-light text-dark mt-2">10 pts avg</div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Dresses Category -->
           <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
-              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                <i class="fas fa-female fa-3x mb-3"></i>
-                <h5 class="mb-2">Dresses</h5>
-                <p class="mb-0 small">Casual, formal, and party dresses</p>
-                <div class="badge bg-light text-dark mt-2">15 pts avg</div>
+            <a href="{{ url_for('user.browse_items', category='dresses') }}" class="text-decoration-none">
+              <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                  <i class="fas fa-female fa-3x mb-3"></i>
+                  <h5 class="mb-2">Dresses</h5>
+                  <p class="mb-0 small">Casual, formal, and party dresses</p>
+                  <div class="badge bg-light text-dark mt-2">15 pts avg</div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Outerwear Category -->
           <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
-              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
-                <i class="fas fa-jacket fa-3x mb-3"></i>
-                <h5 class="mb-2">Outerwear</h5>
-                <p class="mb-0 small">Jackets, coats, and blazers</p>
-                <div class="badge bg-light text-dark mt-2">20 pts avg</div>
+            <a href="{{ url_for('user.browse_items', category='outerwear') }}" class="text-decoration-none">
+              <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                  <i class="fas fa-jacket fa-3x mb-3"></i>
+                  <h5 class="mb-2">Outerwear</h5>
+                  <p class="mb-0 small">Jackets, coats, and blazers</p>
+                  <div class="badge bg-light text-dark mt-2">20 pts avg</div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Accessories Category -->
           <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
-              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
-                <i class="fas fa-gem fa-3x mb-3"></i>
-                <h5 class="mb-2">Accessories</h5>
-                <p class="mb-0 small">Bags, jewelry, and belts</p>
-                <div class="badge bg-light text-dark mt-2">5 pts avg</div>
+            <a href="{{ url_for('user.browse_items', category='accessories') }}" class="text-decoration-none">
+              <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                  <i class="fas fa-gem fa-3x mb-3"></i>
+                  <h5 class="mb-2">Accessories</h5>
+                  <p class="mb-0 small">Bags, jewelry, and belts</p>
+                  <div class="badge bg-light text-dark mt-2">5 pts avg</div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           <!-- Shoes Category -->
           <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
-              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
-                <i class="fas fa-shoe-prints fa-3x mb-3"></i>
-                <h5 class="mb-2">Footwear</h5>
-                <p class="mb-0 small">Sneakers, heels, and boots</p>
-                <div class="badge bg-dark text-light mt-2">12 pts avg</div>
+            <a href="{{ url_for('user.browse_items', category='shoes') }}" class="text-decoration-none">
+              <div class="card shadow-lg move-on-hover min-height-200" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body text-center p-4" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                  <i class="fas fa-shoe-prints fa-3x mb-3"></i>
+                  <h5 class="mb-2">Footwear</h5>
+                  <p class="mb-0 small">Sneakers, heels, and boots</p>
+                  <div class="badge bg-dark text-light mt-2">12 pts avg</div>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
 
@@ -596,9 +608,8 @@
     <div class="row">
       <div class="col-lg-6 mx-auto text-center">
         <h2 class="mb-0">Trusted by over</h2>
-        <h2 class="text-gradient text-primary mb-3">1,679,477+ web developers</h2>
-        <p class="lead">Many Fortune 500 companies, startups, universities and governmental institutions love Creative
-          Tim's products. </p>
+        <h2 class="text-gradient text-primary mb-3">5,000+ fashion enthusiasts</h2>
+        <p class="lead">Fashion lovers, sustainability advocates, and budget-conscious shoppers across the globe choose ReWear for their clothing exchange needs.</p>
       </div>
     </div>
     <div class="row mt-6">
@@ -607,14 +618,13 @@
           <div class="card-body">
             <div class="author">
               <div class="name">
-                <h6 class="mb-0 font-weight-bolder">Nick Willever</h6>
+                <h6 class="mb-0 font-weight-bolder">Sarah Johnson</h6>
                 <div class="stats">
-                  <i class="far fa-clock"></i> 1 day ago
+                  <i class="far fa-clock"></i> 2 days ago
                 </div>
               </div>
             </div>
-            <p class="mt-4">"This is an excellent product, the documentation is excellent and helped me get things done
-              more efficiently."</p>
+            <p class="mt-4">"ReWear has completely transformed my wardrobe! I've exchanged over 15 items and discovered amazing pieces I never would have found otherwise. The points system is genius!"</p>
             <div class="rating mt-3">
               <i class="fas fa-star"></i>
               <i class="fas fa-star"></i>
@@ -630,14 +640,13 @@
           <div class="card-body">
             <div class="author align-items-center">
               <div class="name">
-                <h6 class="text-white mb-0 font-weight-bolder">Shailesh Kushwaha</h6>
+                <h6 class="text-white mb-0 font-weight-bolder">Maria Rodriguez</h6>
                 <div class="stats text-white">
                   <i class="far fa-clock"></i> 1 week ago
                 </div>
               </div>
             </div>
-            <p class="mt-4 text-white">"I found solution to all my design needs from Creative Tim. I use them as a
-              freelancer in my hobby projects for fun! And its really affordable, very humble guys !!!"</p>
+            <p class="mt-4 text-white">"As a college student on a budget, ReWear has been a lifesaver! I've refreshed my entire wardrobe without spending a dime. The community is so friendly and supportive!"</p>
             <div class="rating mt-3">
               <i class="fas fa-star text-white"></i>
               <i class="fas fa-star text-white"></i>
@@ -653,15 +662,13 @@
           <div class="card-body">
             <div class="author">
               <div class="name">
-                <h6 class="mb-0 font-weight-bolder">Samuel Kamuli</h6>
+                <h6 class="mb-0 font-weight-bolder">Alex Chen</h6>
                 <div class="stats">
-                  <i class="far fa-clock"></i> 3 weeks ago
+                  <i class="far fa-clock"></i> 2 weeks ago
                 </div>
               </div>
             </div>
-            <p class="mt-4">"Great product. Helped me cut the time to set up a site. I used the components within
-              instead of starting from scratch. I highly recommend for developers who want to spend more time on the
-              backend!."</p>
+            <p class="mt-4">"ReWear makes sustainable fashion so easy! I love knowing that my clothes get a second life instead of ending up in a landfill. The exchange process is smooth and secure."</p>
             <div class="rating mt-3">
               <i class="fas fa-star"></i>
               <i class="fas fa-star"></i>
@@ -681,8 +688,8 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-5 ms-auto">
-        <h4 class="mb-1">Thank you for your support!</h4>
-        <p class="lead mb-0">We deliver the best web products</p>
+        <h4 class="mb-1">Thank you for choosing sustainable fashion!</h4>
+        <p class="lead mb-0">Together, we're making fashion more sustainable and accessible</p>
       </div>
       <div class="col-lg-5 me-lg-auto my-lg-auto text-lg-end mt-5">
         <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Kit%20made%20by%20%40CreativeTim%20%23webdesign%20%23designsystem%20%23bootstrap5&url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fmaterial-kit"

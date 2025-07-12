@@ -199,6 +199,26 @@
       top: 10px;
     }
   }
+
+  .item-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .points-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .footer {
+    margin-top: auto;
+  }
 </style>
 {% endblock %}
 
@@ -247,7 +267,7 @@
                 <i class="fas fa-exchange-alt"></i>
               </div>
               <h4>{{ swap_data.total_swaps }}</h4>
-              <p class="text-muted">Total Swaps</p>
+              <p class="text-muted">Total Exchanges</p>
             </div>
           </div>
         </div>
@@ -257,8 +277,8 @@
               <div class="stats-icon mx-auto mb-3" style="background: #fff3e0; color: #ef6c00; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                 <i class="fas fa-coins"></i>
               </div>
-              <h4>{{ swap_data.total_points_earned }}</h4>
-              <p class="text-muted">Points Balance</p>
+              <h4>{{ current_user.points_balance }}</h4>
+              <p class="text-muted">Current Points</p>
             </div>
           </div>
         </div>
@@ -268,8 +288,8 @@
               <div class="stats-icon mx-auto mb-3" style="background: #e3f2fd; color: #1976d2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                 <i class="fas fa-arrow-up"></i>
               </div>
-              <h4>{{ swap_data.total_points_spent }}</h4>
-              <p class="text-muted">Points Spent</p>
+              <h4>{{ swap_data.total_points_earned }}</h4>
+              <p class="text-muted">Points Earned</p>
             </div>
           </div>
         </div>
@@ -277,10 +297,10 @@
           <div class="profile-card border-0">
             <div class="card-body text-center">
               <div class="stats-icon mx-auto mb-3" style="background: #ffebee; color: #c62828; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-clock"></i>
+                <i class="fas fa-arrow-down"></i>
               </div>
-              <h4>{{ swap_data.pending_swaps|length }}</h4>
-              <p class="text-muted">Pending</p>
+              <h4>{{ swap_data.total_points_spent }}</h4>
+              <p class="text-muted">Points Spent</p>
             </div>
           </div>
         </div>
@@ -294,22 +314,37 @@
           <div class="profile-header">
             <h4 class="mb-0">
               <i class="fas fa-clock me-2"></i>
-              Pending Swaps
+              Pending Exchanges
             </h4>
           </div>
           <div class="card-body p-0">
-            {% for swap in swap_data.pending_swaps %}
+            {% for exchange in swap_data.pending_swaps %}
             <div class="swap-card border-0 border-bottom">
               <div class="card-body">
                 <div class="row align-items-center">
                   <div class="col-md-2">
-                    <img src="{{ swap.item_image_url or '/static/img/default-item.jpg' }}" 
-                         alt="{{ swap.item_name }}" 
-                         class="item-thumbnail">
+                    {% if exchange.requested_item.media_filename and exchange.requested_item.is_image() %}
+                      <img src="{{ exchange.requested_item.get_media_url() }}" 
+                           alt="{{ exchange.requested_item.title }}" 
+                           class="item-thumbnail">
+                    {% else %}
+                      <div class="item-thumbnail bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-tshirt text-muted"></i>
+                      </div>
+                    {% endif %}
                   </div>
                   <div class="col-md-4">
-                    <h6 class="mb-1">{{ swap.item_name }}</h6>
-                    <small class="text-muted">{{ swap.category }} • {{ swap.size }}</small>
+                    <h6 class="mb-1">{{ exchange.requested_item.title }}</h6>
+                    <small class="text-muted">{{ exchange.requested_item.category.title() }} • Size {{ exchange.requested_item.size }}</small>
+                    <div class="mt-1">
+                      <small class="{% if exchange.requester_id == current_user.id %}text-info{% else %}text-success{% endif %}">
+                        {% if exchange.requester_id == current_user.id %}
+                          <i class="fas fa-arrow-right me-1"></i>You requested from {{ exchange.owner.username }}
+                        {% else %}
+                          <i class="fas fa-arrow-left me-1"></i>{{ exchange.requester.username }} requested from you
+                        {% endif %}
+                      </small>
+                    </div>
                   </div>
                   <div class="col-md-2">
                     <span class="swap-status pending">
@@ -317,12 +352,18 @@
                     </span>
                   </div>
                   <div class="col-md-2">
-                    <span class="points-badge">
-                      <i class="fas fa-coins me-1"></i>{{ swap.points }}
-                    </span>
+                    {% if exchange.exchange_type == 'points' %}
+                      <span class="points-badge">
+                        <i class="fas fa-coins me-1"></i>{{ exchange.points_offered }} pts
+                      </span>
+                    {% else %}
+                      <span class="points-badge bg-secondary">
+                        <i class="fas fa-tshirt me-1"></i>Item Trade
+                      </span>
+                    {% endif %}
                   </div>
                   <div class="col-md-2 text-end">
-                    <small class="text-muted">{{ swap.created_at.strftime('%b %d, %Y') }}</small>
+                    <small class="text-muted">{{ exchange.created_at.strftime('%b %d, %Y') }}</small>
                   </div>
                 </div>
               </div>
@@ -338,35 +379,70 @@
           <div class="profile-header">
             <h4 class="mb-0">
               <i class="fas fa-check-circle me-2"></i>
-              Completed Swaps
+              Completed Exchanges
             </h4>
           </div>
           <div class="card-body p-0">
-            {% for swap in swap_data.completed_swaps %}
+            {% for exchange in swap_data.completed_swaps %}
             <div class="swap-card border-0 border-bottom">
               <div class="card-body">
                 <div class="row align-items-center">
                   <div class="col-md-2">
-                    <img src="{{ swap.item_image_url or '/static/img/default-item.jpg' }}" 
-                         alt="{{ swap.item_name }}" 
-                         class="item-thumbnail">
+                    {% if exchange.requested_item.media_filename and exchange.requested_item.is_image() %}
+                      <img src="{{ exchange.requested_item.get_media_url() }}" 
+                           alt="{{ exchange.requested_item.title }}" 
+                           class="item-thumbnail">
+                    {% else %}
+                      <div class="item-thumbnail bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-tshirt text-muted"></i>
+                      </div>
+                    {% endif %}
                   </div>
                   <div class="col-md-4">
-                    <h6 class="mb-1">{{ swap.item_name }}</h6>
-                    <small class="text-muted">{{ swap.category }} • {{ swap.size }}</small>
+                    <h6 class="mb-1">{{ exchange.requested_item.title }}</h6>
+                    <small class="text-muted">{{ exchange.requested_item.category.title() }} • Size {{ exchange.requested_item.size }}</small>
+                    <div class="mt-1">
+                      <small class="{% if exchange.requester_id == current_user.id %}text-info{% else %}text-success{% endif %}">
+                        {% if exchange.requester_id == current_user.id %}
+                          <i class="fas fa-arrow-right me-1"></i>You traded with {{ exchange.owner.username }}
+                        {% else %}
+                          <i class="fas fa-arrow-left me-1"></i>{{ exchange.requester.username }} traded with you
+                        {% endif %}
+                      </small>
+                    </div>
+                    {% if exchange.offered_item %}
+                    <div class="mt-1">
+                      <small class="text-muted">
+                        <i class="fas fa-exchange-alt me-1"></i>Exchanged for: {{ exchange.offered_item.title }}
+                      </small>
+                    </div>
+                    {% endif %}
                   </div>
                   <div class="col-md-2">
                     <span class="swap-status completed">
-                      <i class="fas fa-check me-1"></i>Completed
+                      <i class="fas fa-check me-1"></i>{{ exchange.status.title() }}
                     </span>
                   </div>
                   <div class="col-md-2">
-                    <span class="points-badge">
-                      <i class="fas fa-coins me-1"></i>{{ swap.points }}
-                    </span>
+                    {% if exchange.exchange_type == 'points' %}
+                      <span class="points-badge {% if exchange.requester_id == current_user.id %}bg-danger{% else %}bg-success{% endif %}">
+                        <i class="fas fa-coins me-1"></i>
+                        {% if exchange.requester_id == current_user.id %}-{% else %}+{% endif %}{{ exchange.points_offered }} pts
+                      </span>
+                    {% else %}
+                      <span class="points-badge bg-secondary">
+                        <i class="fas fa-tshirt me-1"></i>Item Trade
+                      </span>
+                    {% endif %}
                   </div>
                   <div class="col-md-2 text-end">
-                    <small class="text-muted">{{ swap.completed_at.strftime('%b %d, %Y') }}</small>
+                    <small class="text-muted">
+                      {% if exchange.completed_at %}
+                        {{ exchange.completed_at.strftime('%b %d, %Y') }}
+                      {% else %}
+                        {{ exchange.updated_at.strftime('%b %d, %Y') }}
+                      {% endif %}
+                    </small>
                   </div>
                 </div>
               </div>
@@ -382,9 +458,9 @@
           <div class="card-body">
             <div class="empty-state">
               <i class="fas fa-exchange-alt"></i>
-              <h4>No Swap History Yet</h4>
-              <p>You haven't completed any swaps yet. Start by browsing available items!</p>
-              <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary">
+              <h4>No Exchange History Yet</h4>
+              <p>You haven't completed any exchanges yet. Start by browsing available items!</p>
+              <a href="{{ url_for('user.browse_items') }}" class="btn btn-primary">
                 <i class="fas fa-search me-2"></i>Browse Items
               </a>
             </div>
