@@ -1,18 +1,34 @@
 # -*- encoding: utf-8 -*-
 """
-Controllers package
+Controllers package  
 """
 
-import sys
-import os
+# Try importing blueprint directly
+blueprint = None
 
-# Add Landing Page directory to path to handle spaces in directory name
-landing_page_path = os.path.join(os.path.dirname(__file__), 'Landing Page')
-if landing_page_path not in sys.path:
-    sys.path.insert(0, landing_page_path)
-
-# Import the blueprint from Landing Page
 try:
-    from __init__ import blueprint
-except ImportError:
+    # Import Flask to create blueprint here if needed
+    from flask import Blueprint
+    
+    # Create the blueprint here since importing from Landing Page is problematic
+    blueprint = Blueprint(
+        'home_blueprint',
+        __name__,
+        url_prefix=''
+    )
+    
+    print("Blueprint created successfully")
+    
+    # Now import routes to register them with the blueprint
+    import sys
+    import os
+    landing_page_path = os.path.join(os.path.dirname(__file__), 'Landing Page')
+    sys.path.insert(0, landing_page_path)
+    
+    # Import routes module
+    import routes
+    print("Routes imported successfully")
+    
+except Exception as e:
+    print(f"Error creating blueprint: {e}")
     blueprint = None

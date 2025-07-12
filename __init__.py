@@ -18,21 +18,32 @@ login_manager = LoginManager()
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
+    
+    # Configure Flask-Login
+    login_manager.login_view = 'authentication.login'
+    login_manager.login_message_category = 'info'
+    
+    # User loader callback
+    @login_manager.user_loader
+    def load_user(user_id):
+        # For now, return None since we don't have User model yet
+        # This will be updated when you add authentication
+        return None
 
 
 def register_blueprints(app):
     # Import and register the home blueprint from Landing Page
-    from controllers import blueprint
-    if blueprint:
-        app.register_blueprint(blueprint)
-
-        # Import routes to register them with the blueprint
-        import sys
-        import os
-        landing_page_path = os.path.join(os.path.dirname(__file__), 'controllers', 'Landing Page')
-        if landing_page_path not in sys.path:
-            sys.path.insert(0, landing_page_path)
-        import routes
+    try:
+        from controllers import blueprint
+        if blueprint:
+            app.register_blueprint(blueprint)
+            print("Blueprint registered successfully")
+        else:
+            print("Blueprint is None - check controllers/__init__.py")
+    except ImportError as e:
+        print(f"Error importing blueprint: {e}")
+    except Exception as e:
+        print(f"Error registering blueprint: {e}")
 
 
 def configure_database(app):
@@ -47,7 +58,7 @@ def configure_database(app):
 
             # fallback to SQLite
             basedir = os.path.abspath(os.path.dirname(__file__))
-            app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
+            app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
 
             print('> Fallback to SQLite ')
             db.create_all()
@@ -58,7 +69,15 @@ def configure_database(app):
 
 
 def create_app(config):
-    app = Flask(__name__)
+    # Set explicit paths for templates and static files
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    template_folder = os.path.join(basedir, 'templates')
+    static_folder = os.path.join(basedir, 'static_landing_site')
+    
+    app = Flask(__name__, 
+                template_folder=template_folder,
+                static_folder=static_folder,
+                static_url_path='/static')  # Explicitly set the URL path for static files
     app.config.from_object(config)
     register_extensions(app)
     register_blueprints(app)

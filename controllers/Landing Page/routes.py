@@ -3,7 +3,12 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from . import blueprint
+# Import blueprint from parent controllers package
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from controllers import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
