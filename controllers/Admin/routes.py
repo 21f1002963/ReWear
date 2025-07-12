@@ -314,3 +314,139 @@ def bulk_moderate():
         current_app.logger.error(f"Error bulk moderating items: {str(e)}")
         db.session.rollback()
         return jsonify({'success': False, 'message': 'An error occurred'}), 500
+
+@admin_bp.route('/users/<int:user_id>/remove', methods=['POST'])
+@login_required
+@admin_required
+def remove_user(user_id):
+    """Remove user account"""
+    user = User.query.get_or_404(user_id)
+
+    if user.id == current_user.id:
+        flash('You cannot remove your own account.', 'error')
+        return redirect(url_for('admin.manage_users'))
+    
+    if user.is_admin:
+        flash('Admin accounts cannot be removed.', 'error')
+        return redirect(url_for('admin.manage_users'))
+
+    try:
+        # Store username for flash message
+        username = user.username
+        
+        # Delete user's items first (if any)
+        Item.query.filter_by(user_id=user.id).delete()
+        
+        # Delete the user
+        db.session.delete(user)
+        db.session.commit()
+        
+        flash(f'User {username} has been removed successfully.', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while removing the user.', 'error')
+        print(f"User removal error: {e}")
+
+    return redirect(url_for('admin.manage_users'))
+
+@admin_bp.route('/users/bulk-action', methods=['POST'])
+@login_required
+@admin_required
+def bulk_user_action():
+    """Perform bulk actions on users"""
+    try:
+        user_ids = request.json.get('user_ids', [])
+        action = request.json.get('action')
+
+        if not user_ids or action not in ['activate', 'deactivate', 'remove']:
+            return jsonify({'success': False, 'message': 'Invalid request'}), 400
+
+        users = User.query.filter(User.id.in_(user_ids)).all()
+        success_count = 0
+
+        for user in users:
+            # Skip current user and admin users for certain actions
+            if user.id == current_user.id or user.is_admin:
+                continue
+                
+            if action == 'activate':
+                user.is_active = True
+                success_count += 1
+            elif action == 'deactivate':
+                user.is_active = False
+                success_count += 1
+            elif action == 'remove':
+                # Delete user's items first
+                Item.query.filter_by(user_id=user.id).delete()
+                db.session.delete(user)
+                success_count += 1
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': f'{success_count} users {action}d successfully'
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'An error occurred'}), 500
+
+@admin_bp.route('/items/<int:item_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_item(item_id):
+    """Permanently delete an item from the database"""
+    try:
+        item = Item.query.get_or_404(item_id)
+        
+        # Store item title for flash message
+        item_title = item.title
+        
+        # Delete the item permanently from database
+        db.session.delete(item)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Item "{item_title}" has been permanently deleted'
+        })
+
+    except Exception as e:
+        current_app.logger.error(f"Error deleting item {item_id}: {str(e)}")
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'An error occurred while deleting the item'}), 500
+
+@admin_bp.route('/items/bulk-delete', methods=['POST'])
+@login_required
+@admin_required
+def bulk_delete_items():
+    """Permanently delete multiple items from the database"""
+    try:
+        item_ids = request.json.get('item_ids', [])
+        
+        if not item_ids:
+            return jsonify({'success': False, 'message': 'No items selected'}), 400
+
+        # Get items to be deleted
+        items = Item.query.filter(Item.id.in_(item_ids)).all()
+        
+        if not items:
+            return jsonify({'success': False, 'message': 'No valid items found'}), 400
+        
+        # Delete all items
+        for item in items:
+            db.session.delete(item)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{len(items)} items have been permanently deleted'
+        })
+
+    except Exception as e:
+        current_app.logger.error(f"Error bulk deleting items: {str(e)}")
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'An error occurred while deleting items'}), 500

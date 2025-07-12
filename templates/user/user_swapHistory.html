@@ -4,40 +4,207 @@
 
 {% block extra_css %}
 <style>
-  .auth-wrapper {
-    background: #fff;
-    background-image: none;
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Poppins', sans-serif;
   }
 
-  .auth-wrapper::before {
-    display: none;
+  .main-container {
+    padding: 2rem 0;
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
   }
 
-  .profile-card {
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    margin-bottom: 2rem;
-  }
-
-  .profile-header {
-    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 1rem;
-    border-radius: 15px 15px 0 0;
+    padding: 2.5rem 0;
+    margin-bottom: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
   }
 
-  .swap-card {
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+  .page-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+  }
+
+  .stats-overview {
+    margin-bottom: 3rem;
+  }
+
+  .stats-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem 1.5rem;
     margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
     overflow: hidden;
   }
 
-  .swap-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .stats-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+    font-size: 1.5rem;
+    position: relative;
+  }
+
+  .stats-icon.success {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+  }
+
+  .stats-icon.warning {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
+  }
+
+  .stats-icon.info {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+  }
+
+  .stats-icon.danger {
+    background: linear-gradient(135deg, #F44336, #D32F2F);
+    color: white;
+  }
+
+  .stats-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .stats-label {
+    color: #6c757d;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+
+  .section-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border: none;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+
+  .section-header h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+
+  .exchange-item {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .exchange-item:last-child {
+    border-bottom: none;
+  }
+
+  .exchange-item:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+  }
+
+  .item-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+  }
+
+  .item-thumbnail:hover {
+    transform: scale(1.05);
+  }
+
+  .item-placeholder {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #999;
+  }
+
+  .item-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .item-meta {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .exchange-direction {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-weight: 500;
+  }
+
+  .exchange-direction.outgoing {
+    background: rgba(33, 150, 243, 0.1);
+    color: #1976D2;
+  }
+
+  .exchange-direction.incoming {
+    background: rgba(76, 175, 80, 0.1);
+    color: #388E3C;
   }
 
   .swap-status {
@@ -45,49 +212,130 @@
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .swap-status.completed {
-    background: #d4edda;
-    color: #155724;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
   }
 
   .swap-status.pending {
-    background: #fff3cd;
-    color: #856404;
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
   }
 
   .swap-status.cancelled {
-    background: #f8d7da;
-    color: #721c24;
+    background: linear-gradient(135deg, #F44336, #D32F2F);
+    color: white;
   }
 
   .points-badge {
-    background: linear-gradient(135deg, #ffd700, #ff8c00);
-    color: #fff;
     padding: 0.4rem 0.8rem;
     border-radius: 15px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
   }
 
-  .item-thumbnail {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
+  .points-badge.earned {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+  }
+
+  .points-badge.spent {
+    background: linear-gradient(135deg, #F44336, #D32F2F);
+    color: white;
+  }
+
+  .points-badge.neutral {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+  }
+
+  .exchange-date {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-weight: 500;
   }
 
   .empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 4rem 2rem;
     color: #6c757d;
   }
 
-  .empty-state i {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+  .empty-state-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
     color: #dee2e6;
+  }
+
+  .empty-state h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state p {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      padding: 1rem 0;
+    }
+
+    .page-header {
+      padding: 2rem 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .page-header h2 {
+      font-size: 2rem;
+    }
+
+    .stats-card {
+      padding: 1.5rem 1rem;
+    }
+
+    .stats-value {
+      font-size: 2rem;
+    }
+
+    .section-header {
+      padding: 1rem 1.5rem;
+    }
+
+    .exchange-item {
+      padding: 1rem 1.5rem;
+    }
+
+    .item-thumbnail,
+    .item-placeholder {
+      width: 60px;
+      height: 60px;
+    }
   }
 
   /* Slide menu styles */
@@ -129,7 +377,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px;
+    width: 380px;
     height: 100%;
     background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
     box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
@@ -175,12 +423,12 @@
 
   .slide-menu a {
     color: #495057;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
     text-decoration: none;
     display: flex;
     align-items: center;
-    padding: 18px 24px;
+    padding: 20px 30px;
     border-radius: 12px;
     transition: all 0.3s ease;
     position: relative;
@@ -194,9 +442,10 @@
   }
 
   .slide-menu a i {
-    width: 20px;
+    width: 24px;
     text-align: center;
-    margin-right: 15px;
+    margin-right: 20px;
+    font-size: 1.1rem;
   }
 
   .slide-menu a[href*="swap-history"] {
@@ -283,236 +532,234 @@
   </ul>
 </nav>
 
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <h2 class="mb-1">
-        <i class="fas fa-history text-primary me-2"></i>
+<div class="container-fluid main-container">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header text-center">
+      <h2>
+        <i class="fas fa-history me-3"></i>
         Swap History
       </h2>
-      <p class="text-muted mb-4">Track your clothing exchanges and points transactions</p>
+      <p>Track your clothing exchanges and points transactions</p>
+    </div>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-      {% endwith %}
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
 
-      <!-- Stats Overview -->
-      <div class="row mb-4">
-        <div class="col-md-3">
-          <div class="profile-card border-0">
-            <div class="card-body text-center">
-              <div class="stats-icon mx-auto mb-3" style="background: #e8f5e9; color: #2e7d32; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-exchange-alt"></i>
-              </div>
-              <h4>{{ swap_data.total_swaps }}</h4>
-              <p class="text-muted">Total Exchanges</p>
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <div class="row">
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-card text-center">
+            <div class="stats-icon success">
+              <i class="fas fa-exchange-alt"></i>
             </div>
+            <div class="stats-value">{{ swap_data.total_swaps }}</div>
+            <div class="stats-label">Total Exchanges</div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="profile-card border-0">
-            <div class="card-body text-center">
-              <div class="stats-icon mx-auto mb-3" style="background: #fff3e0; color: #ef6c00; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-coins"></i>
-              </div>
-              <h4>{{ current_user.points_balance }}</h4>
-              <p class="text-muted">Current Points</p>
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-card text-center">
+            <div class="stats-icon info">
+              <i class="fas fa-coins"></i>
             </div>
+            <div class="stats-value">{{ current_user.points_balance }}</div>
+            <div class="stats-label">Current Points</div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="profile-card border-0">
-            <div class="card-body text-center">
-              <div class="stats-icon mx-auto mb-3" style="background: #e3f2fd; color: #1976d2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-arrow-up"></i>
-              </div>
-              <h4>{{ swap_data.total_points_earned }}</h4>
-              <p class="text-muted">Points Earned</p>
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-card text-center">
+            <div class="stats-icon success">
+              <i class="fas fa-arrow-up"></i>
             </div>
+            <div class="stats-value">{{ swap_data.total_points_earned }}</div>
+            <div class="stats-label">Points Earned</div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="profile-card border-0">
-            <div class="card-body text-center">
-              <div class="stats-icon mx-auto mb-3" style="background: #ffebee; color: #c62828; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-arrow-down"></i>
-              </div>
-              <h4>{{ swap_data.total_points_spent }}</h4>
-              <p class="text-muted">Points Spent</p>
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-card text-center">
+            <div class="stats-icon danger">
+              <i class="fas fa-arrow-down"></i>
             </div>
+            <div class="stats-value">{{ swap_data.total_points_spent }}</div>
+            <div class="stats-label">Points Spent</div>
           </div>
         </div>
       </div>
-
-      <!-- Swap History List -->
-      {% if swap_data.completed_swaps or swap_data.pending_swaps %}
-        <!-- Pending Swaps -->
-        {% if swap_data.pending_swaps %}
-        <div class="profile-card border-0 mb-4">
-          <div class="profile-header">
-            <h4 class="mb-0">
-              <i class="fas fa-clock me-2"></i>
-              Pending Exchanges
-            </h4>
-          </div>
-          <div class="card-body p-0">
-            {% for exchange in swap_data.pending_swaps %}
-            <div class="swap-card border-0 border-bottom">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-md-2">
-                    {% if exchange.requested_item.media_filename and exchange.requested_item.is_image() %}
-                      <img src="{{ exchange.requested_item.get_media_url() }}"
-                           alt="{{ exchange.requested_item.title }}"
-                           class="item-thumbnail">
-                    {% else %}
-                      <div class="item-thumbnail bg-light d-flex align-items-center justify-content-center">
-                        <i class="fas fa-tshirt text-muted"></i>
-                      </div>
-                    {% endif %}
-                  </div>
-                  <div class="col-md-4">
-                    <h6 class="mb-1">{{ exchange.requested_item.title }}</h6>
-                    <small class="text-muted">{{ exchange.requested_item.category.title() }} • Size {{ exchange.requested_item.size }}</small>
-                    <div class="mt-1">
-                      <small class="{% if exchange.requester_id == current_user.id %}text-info{% else %}text-success{% endif %}">
-                        {% if exchange.requester_id == current_user.id %}
-                          <i class="fas fa-arrow-right me-1"></i>You requested from {{ exchange.owner.username }}
-                        {% else %}
-                          <i class="fas fa-arrow-left me-1"></i>{{ exchange.requester.username }} requested from you
-                        {% endif %}
-                      </small>
-                    </div>
-                  </div>
-                  <div class="col-md-2">
-                    <span class="swap-status pending">
-                      <i class="fas fa-clock me-1"></i>Pending
-                    </span>
-                  </div>
-                  <div class="col-md-2">
-                    {% if exchange.exchange_type == 'points' %}
-                      <span class="points-badge">
-                        <i class="fas fa-coins me-1"></i>{{ exchange.points_offered }} pts
-                      </span>
-                    {% else %}
-                      <span class="points-badge bg-secondary">
-                        <i class="fas fa-tshirt me-1"></i>Item Trade
-                      </span>
-                    {% endif %}
-                  </div>
-                  <div class="col-md-2 text-end">
-                    <small class="text-muted">{{ exchange.created_at.strftime('%b %d, %Y') }}</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-
-        <!-- Completed Swaps -->
-        {% if swap_data.completed_swaps %}
-        <div class="profile-card border-0">
-          <div class="profile-header">
-            <h4 class="mb-0">
-              <i class="fas fa-check-circle me-2"></i>
-              Completed Exchanges
-            </h4>
-          </div>
-          <div class="card-body p-0">
-            {% for exchange in swap_data.completed_swaps %}
-            <div class="swap-card border-0 border-bottom">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-md-2">
-                    {% if exchange.requested_item.media_filename and exchange.requested_item.is_image() %}
-                      <img src="{{ exchange.requested_item.get_media_url() }}"
-                           alt="{{ exchange.requested_item.title }}"
-                           class="item-thumbnail">
-                    {% else %}
-                      <div class="item-thumbnail bg-light d-flex align-items-center justify-content-center">
-                        <i class="fas fa-tshirt text-muted"></i>
-                      </div>
-                    {% endif %}
-                  </div>
-                  <div class="col-md-4">
-                    <h6 class="mb-1">{{ exchange.requested_item.title }}</h6>
-                    <small class="text-muted">{{ exchange.requested_item.category.title() }} • Size {{ exchange.requested_item.size }}</small>
-                    <div class="mt-1">
-                      <small class="{% if exchange.requester_id == current_user.id %}text-info{% else %}text-success{% endif %}">
-                        {% if exchange.requester_id == current_user.id %}
-                          <i class="fas fa-arrow-right me-1"></i>You traded with {{ exchange.owner.username }}
-                        {% else %}
-                          <i class="fas fa-arrow-left me-1"></i>{{ exchange.requester.username }} traded with you
-                        {% endif %}
-                      </small>
-                    </div>
-                    {% if exchange.offered_item %}
-                    <div class="mt-1">
-                      <small class="text-muted">
-                        <i class="fas fa-exchange-alt me-1"></i>Exchanged for: {{ exchange.offered_item.title }}
-                      </small>
-                    </div>
-                    {% endif %}
-                  </div>
-                  <div class="col-md-2">
-                    <span class="swap-status completed">
-                      <i class="fas fa-check me-1"></i>{{ exchange.status.title() }}
-                    </span>
-                  </div>
-                  <div class="col-md-2">
-                    {% if exchange.exchange_type == 'points' %}
-                      <span class="points-badge {% if exchange.requester_id == current_user.id %}bg-danger{% else %}bg-success{% endif %}">
-                        <i class="fas fa-coins me-1"></i>
-                        {% if exchange.requester_id == current_user.id %}-{% else %}+{% endif %}{{ exchange.points_offered }} pts
-                      </span>
-                    {% else %}
-                      <span class="points-badge bg-secondary">
-                        <i class="fas fa-tshirt me-1"></i>Item Trade
-                      </span>
-                    {% endif %}
-                  </div>
-                  <div class="col-md-2 text-end">
-                    <small class="text-muted">
-                      {% if exchange.completed_at %}
-                        {{ exchange.completed_at.strftime('%b %d, %Y') }}
-                      {% else %}
-                        {{ exchange.updated_at.strftime('%b %d, %Y') }}
-                      {% endif %}
-                    </small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-
-      {% else %}
-        <!-- Empty State -->
-        <div class="profile-card border-0">
-          <div class="card-body">
-            <div class="empty-state">
-              <i class="fas fa-exchange-alt"></i>
-              <h4>No Exchange History Yet</h4>
-              <p>You haven't completed any exchanges yet. Start by browsing available items!</p>
-              <a href="{{ url_for('user.browse_items') }}" class="btn btn-primary">
-                <i class="fas fa-search me-2"></i>Browse Items
-              </a>
-            </div>
-          </div>
-        </div>
-      {% endif %}
     </div>
+
+    <!-- Exchange History -->
+    {% if swap_data.completed_swaps or swap_data.pending_swaps %}
+      <!-- Pending Swaps -->
+      {% if swap_data.pending_swaps %}
+      <div class="section-card">
+        <div class="section-header">
+          <h4>
+            <i class="fas fa-clock me-2"></i>
+            Pending Exchanges
+          </h4>
+        </div>
+        <div class="card-body p-0">
+          {% for exchange in swap_data.pending_swaps %}
+          <div class="exchange-item">
+            <div class="row align-items-center">
+              <div class="col-lg-2 col-md-3 col-sm-4 mb-3 mb-sm-0">
+                {% if exchange.requested_item.media_filename and exchange.requested_item.is_image() %}
+                  <img src="{{ exchange.requested_item.get_media_url() }}"
+                       alt="{{ exchange.requested_item.title }}"
+                       class="item-thumbnail">
+                {% else %}
+                  <div class="item-placeholder">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="col-lg-4 col-md-5 col-sm-8 mb-3 mb-lg-0">
+                <div class="item-title">{{ exchange.requested_item.title }}</div>
+                <div class="item-meta">{{ exchange.requested_item.category.title() }} • Size {{ exchange.requested_item.size }}</div>
+                <div class="mt-2">
+                  {% if exchange.requester_id == current_user.id %}
+                    <span class="exchange-direction outgoing">
+                      <i class="fas fa-arrow-right me-1"></i>You requested from {{ exchange.owner.username }}
+                    </span>
+                  {% else %}
+                    <span class="exchange-direction incoming">
+                      <i class="fas fa-arrow-left me-1"></i>{{ exchange.requester.username }} requested from you
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-2 col-md-4 col-6 mb-3 mb-lg-0">
+                <span class="swap-status pending">
+                  <i class="fas fa-clock"></i>Pending
+                </span>
+              </div>
+              <div class="col-lg-2 col-md-4 col-6 mb-3 mb-lg-0">
+                {% if exchange.exchange_type == 'points' %}
+                  <span class="points-badge neutral">
+                    <i class="fas fa-coins"></i>{{ exchange.points_offered }} pts
+                  </span>
+                {% else %}
+                  <span class="points-badge neutral">
+                    <i class="fas fa-tshirt"></i>Item Trade
+                  </span>
+                {% endif %}
+              </div>
+              <div class="col-lg-2 col-md-4 text-end">
+                <div class="exchange-date">{{ exchange.created_at.strftime('%b %d, %Y') }}</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Completed Swaps -->
+      {% if swap_data.completed_swaps %}
+      <div class="section-card">
+        <div class="section-header">
+          <h4>
+            <i class="fas fa-check-circle me-2"></i>
+            Completed Exchanges
+          </h4>
+        </div>
+        <div class="card-body p-0">
+          {% for exchange in swap_data.completed_swaps %}
+          <div class="exchange-item">
+            <div class="row align-items-center">
+              <div class="col-lg-2 col-md-3 col-sm-4 mb-3 mb-sm-0">
+                {% if exchange.requested_item.media_filename and exchange.requested_item.is_image() %}
+                  <img src="{{ exchange.requested_item.get_media_url() }}"
+                       alt="{{ exchange.requested_item.title }}"
+                       class="item-thumbnail">
+                {% else %}
+                  <div class="item-placeholder">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="col-lg-4 col-md-5 col-sm-8 mb-3 mb-lg-0">
+                <div class="item-title">{{ exchange.requested_item.title }}</div>
+                <div class="item-meta">{{ exchange.requested_item.category.title() }} • Size {{ exchange.requested_item.size }}</div>
+                <div class="mt-2">
+                  {% if exchange.requester_id == current_user.id %}
+                    <span class="exchange-direction outgoing">
+                      <i class="fas fa-arrow-right me-1"></i>You traded with {{ exchange.owner.username }}
+                    </span>
+                  {% else %}
+                    <span class="exchange-direction incoming">
+                      <i class="fas fa-arrow-left me-1"></i>{{ exchange.requester.username }} traded with you
+                    </span>
+                  {% endif %}
+                </div>
+                {% if exchange.offered_item %}
+                <div class="mt-1">
+                  <small class="text-muted">
+                    <i class="fas fa-exchange-alt me-1"></i>Exchanged for: {{ exchange.offered_item.title }}
+                  </small>
+                </div>
+                {% endif %}
+              </div>
+              <div class="col-lg-2 col-md-4 col-6 mb-3 mb-lg-0">
+                <span class="swap-status completed">
+                  <i class="fas fa-check"></i>{{ exchange.status.title() }}
+                </span>
+              </div>
+              <div class="col-lg-2 col-md-4 col-6 mb-3 mb-lg-0">
+                {% if exchange.exchange_type == 'points' %}
+                  <span class="points-badge {% if exchange.requester_id == current_user.id %}spent{% else %}earned{% endif %}">
+                    <i class="fas fa-coins"></i>
+                    {% if exchange.requester_id == current_user.id %}-{% else %}+{% endif %}{{ exchange.points_offered }} pts
+                  </span>
+                {% else %}
+                  <span class="points-badge neutral">
+                    <i class="fas fa-tshirt"></i>Item Trade
+                  </span>
+                {% endif %}
+              </div>
+              <div class="col-lg-2 col-md-4 text-end">
+                <div class="exchange-date">
+                  {% if exchange.completed_at %}
+                    {{ exchange.completed_at.strftime('%b %d, %Y') }}
+                  {% else %}
+                    {{ exchange.updated_at.strftime('%b %d, %Y') }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="section-card">
+        <div class="card-body">
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+            <h4>No Exchange History Yet</h4>
+            <p>You haven't completed any exchanges yet. Start by browsing available items!</p>
+            <a href="{{ url_for('user.browse_items') }}" class="btn btn-primary">
+              <i class="fas fa-search me-2"></i>Browse Items
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
