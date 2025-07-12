@@ -17,21 +17,15 @@ pip install --no-cache-dir -r requirements.txt
 echo "🔍 Verifying installations..."
 python -c "
 import sys
+import pkg_resources
 
 required = [
-    'flask', 'flask_login', 'flask_sqlalchemy', 'flask_migrate',
-    'flask_wtf', 'flask_bcrypt', 'gunicorn', 'psycopg2'
+    'Flask', 'Flask-Login', 'Flask-SQLAlchemy', 'Flask-Migrate',
+    'Flask-WTF', 'Flask-Bcrypt', 'gunicorn', 'psycopg2-binary'
 ]
 
-print('Checking required packages...')
-missing = []
-for pkg in required:
-    try:
-        __import__(pkg)
-        print(f'✅ {pkg} - OK')
-    except ImportError:
-        missing.append(pkg)
-        print(f'❌ {pkg} - MISSING')
+installed = [pkg.project_name for pkg in pkg_resources.working_set]
+missing = [pkg for pkg in required if pkg not in installed]
 
 if missing:
     print(f'❌ Missing packages: {missing}')
