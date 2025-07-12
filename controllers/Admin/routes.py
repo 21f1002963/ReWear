@@ -126,7 +126,7 @@ def make_admin(user_id):
 def edit_profile():
     """Admin edit profile route"""
     form = ProfileForm()
-    
+
     if form.validate_on_submit():
         try:
             # Update admin profile
@@ -134,20 +134,20 @@ def edit_profile():
             current_user.last_name = form.last_name.data
             current_user.phone_number = form.phone_number.data
             current_user.address = form.address.data
-            
+
             db.session.commit()
             flash('Profile updated successfully!', 'success')
             return redirect(url_for('admin.edit_profile'))
-            
+
         except Exception as e:
             db.session.rollback()
             flash('An error occurred while updating your profile.', 'error')
             print(f"Admin profile update error: {e}")
-    
+
     # Pre-populate form with current user data
     form.first_name.data = current_user.first_name
     form.last_name.data = current_user.last_name
     form.phone_number.data = current_user.phone_number
     form.address.data = current_user.address
-    
+
     return render_template('admin/admin_editprofile.html', form=form)
