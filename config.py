@@ -4,10 +4,6 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 import os, random, string
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 class Config(object):
 
