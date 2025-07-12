@@ -36,9 +36,10 @@ def register_extensions(app):
     # Handle unauthorized access
     @login_manager.unauthorized_handler
     def unauthorized():
-        from flask import redirect, url_for, flash
+        from flask import redirect, url_for, flash, request
         flash('Please log in to access this page.', 'info')
-        return redirect(url_for('auth.login'))
+        # Add the current URL as the 'next' parameter
+        return redirect(url_for('auth.login', next=request.url))
 
 
 def register_blueprints(app):

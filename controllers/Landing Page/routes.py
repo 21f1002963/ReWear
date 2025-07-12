@@ -12,11 +12,18 @@ from controllers import blueprint
 from flask import render_template, request, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+from models.item import Item
 
 
 @blueprint.route('/')
 def home():
-    return render_template('home/index.html', segment='index')
+    # Get featured items (latest approved items) for the homepage
+    featured_items = Item.query.filter_by(
+        moderation_status='approved',
+        status='available'
+    ).order_by(Item.created_at.desc()).limit(6).all()
+
+    return render_template('home/index.html', segment='index', featured_items=featured_items)
 
 
 @blueprint.route('/index')

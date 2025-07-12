@@ -35,7 +35,7 @@ def dashboard():
     total_users = User.query.filter_by(is_admin=False).count()
     active_users = User.query.filter_by(is_active=True, is_admin=False).count()
     new_users_today = User.query.filter(
-        User.created_at >= db.func.date('now'), 
+        User.created_at >= db.func.date('now'),
         User.is_admin == False
     ).count()
 
@@ -190,7 +190,7 @@ def view_items():
     # Apply status filter
     if status_filter:
         query = query.filter(Item.status == status_filter)
-    
+
     # Apply moderation filter
     if moderation_filter:
         query = query.filter(Item.moderation_status == moderation_filter)
@@ -214,8 +214,8 @@ def view_items():
         'rejected_items': Item.query.filter_by(moderation_status='rejected').count(),
     }
 
-    return render_template('admin/admin_viewItems.html', 
-                         items=items, 
+    return render_template('admin/admin_viewItems.html',
+                         items=items,
                          search=search,
                          category_filter=category_filter,
                          status_filter=status_filter,
@@ -232,10 +232,10 @@ def moderate_item(item_id):
         item = Item.query.get_or_404(item_id)
         action = request.json.get('action')
         notes = request.json.get('notes', '')
-        
+
         if action not in ['approve', 'reject', 'remove']:
             return jsonify({'success': False, 'message': 'Invalid action'}), 400
-        
+
         # Update item moderation status
         if action == 'approve':
             item.moderation_status = 'approved'
@@ -250,20 +250,20 @@ def moderate_item(item_id):
             item.is_active = False
             item.status = 'removed'
             message = 'Item removed successfully'
-        
+
         # Update moderation fields
         item.moderation_notes = notes
         item.moderated_by = current_user.id
         item.moderated_at = datetime.utcnow()
-        
+
         db.session.commit()
-        
+
         return jsonify({
-            'success': True, 
+            'success': True,
             'message': message,
             'new_status': item.moderation_status
         })
-        
+
     except Exception as e:
         current_app.logger.error(f"Error moderating item {item_id}: {str(e)}")
         db.session.rollback()
@@ -279,13 +279,13 @@ def bulk_moderate():
         item_ids = request.json.get('item_ids', [])
         action = request.json.get('action')
         notes = request.json.get('notes', '')
-        
+
         if not item_ids or action not in ['approve', 'reject', 'remove']:
             return jsonify({'success': False, 'message': 'Invalid request'}), 400
-        
+
         items = Item.query.filter(Item.id.in_(item_ids)).all()
         success_count = 0
-        
+
         for item in items:
             if action == 'approve':
                 item.moderation_status = 'approved'
@@ -297,19 +297,19 @@ def bulk_moderate():
                 item.moderation_status = 'rejected'
                 item.is_active = False
                 item.status = 'removed'
-            
+
             item.moderation_notes = notes
             item.moderated_by = current_user.id
             item.moderated_at = datetime.utcnow()
             success_count += 1
-        
+
         db.session.commit()
-        
+
         return jsonify({
             'success': True,
             'message': f'{success_count} items {action}d successfully'
         })
-        
+
     except Exception as e:
         current_app.logger.error(f"Error bulk moderating items: {str(e)}")
         db.session.rollback()

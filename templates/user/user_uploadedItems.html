@@ -415,7 +415,7 @@
           </div>
           <div class="mb-2">
             <small class="text-muted">
-              <i class="fas fa-tag me-1"></i>{{ item.category.title() }} • 
+              <i class="fas fa-tag me-1"></i>{{ item.category.title() }} •
               <i class="fas fa-expand-arrows-alt me-1"></i>{{ item.size }}
               {% if item.color %}
                 • <i class="fas fa-palette me-1"></i>{{ item.color.title() }}
@@ -438,7 +438,7 @@
                 <i class="fas fa-edit"></i> Edit
               </a>
               {% if item.status == 'available' %}
-              <form method="POST" action="{{ url_for('user.delete_item', item_id=item.id) }}" style="display: inline;" 
+              <form method="POST" action="{{ url_for('user.delete_item', item_id=item.id) }}" style="display: inline;"
                     onsubmit="return confirm('Are you sure you want to delete this item?')">
                 <button type="submit" class="btn btn-outline-danger btn-sm">
                   <i class="fas fa-trash"></i> Remove
@@ -464,7 +464,7 @@
           </a>
         </li>
       {% endif %}
-      
+
       {% for page_num in items.iter_pages() %}
         {% if page_num %}
           {% if page_num != items.page %}
@@ -482,7 +482,7 @@
           </li>
         {% endif %}
       {% endfor %}
-      
+
       {% if items.has_next %}
         <li class="page-item">
           <a class="page-link" href="{{ url_for('user.uploaded_items', page=items.next_num) }}">

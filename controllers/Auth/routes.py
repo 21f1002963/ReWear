@@ -39,13 +39,18 @@ def login():
 
             # Handle next parameter for redirecting after login
             next_page = request.args.get('next')
-            if not next_page or urlparse(next_page).netloc != '':
+            
+            # Check if next_page is safe (internal URL only)
+            if next_page and urlparse(next_page).netloc == '':
+                # Valid internal URL, redirect to it
+                return redirect(next_page)
+            else:
+                # No next parameter or external URL, redirect to default dashboard
                 if user.is_admin:
                     next_page = url_for('admin.dashboard')
                 else:
                     next_page = url_for('user.dashboard')
-
-            return redirect(next_page)
+                return redirect(next_page)
         else:
             flash('Invalid email or password. Please try again.', 'error')
 
@@ -55,6 +60,10 @@ def login():
 def register():
     """User registration route"""
     if current_user.is_authenticated:
+        # Handle next parameter if user is already logged in
+        next_page = request.args.get('next')
+        if next_page and urlparse(next_page).netloc == '':
+            return redirect(next_page)
         return redirect(url_for('user.dashboard'))
 
     form = RegisterForm()
@@ -90,7 +99,16 @@ def register():
             flash('Registration successful! Welcome to ReWear!', 'success')
             login_user(user)
 
-            return redirect(url_for('user.dashboard'))
+            # Handle next parameter for redirecting after registration
+            next_page = request.args.get('next')
+            
+            # Check if next_page is safe (internal URL only)
+            if next_page and urlparse(next_page).netloc == '':
+                # Valid internal URL, redirect to it
+                return redirect(next_page)
+            else:
+                # No next parameter or external URL, redirect to default dashboard
+                return redirect(url_for('user.dashboard'))
 
         except Exception as e:
             db.session.rollback()

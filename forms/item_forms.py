@@ -13,12 +13,12 @@ class AddItemForm(FlaskForm):
         DataRequired(message='Title is required'),
         Length(min=3, max=100, message='Title must be between 3 and 100 characters')
     ])
-    
+
     description = TextAreaField('Description', validators=[
         Optional(),
         Length(max=500, message='Description cannot exceed 500 characters')
     ])
-    
+
     category = SelectField('Category', validators=[DataRequired()], choices=[
         ('', 'Select Category'),
         ('tops', 'Tops'),
@@ -33,7 +33,7 @@ class AddItemForm(FlaskForm):
         ('vintage', 'Vintage'),
         ('other', 'Other')
     ])
-    
+
     size = SelectField('Size', validators=[DataRequired()], choices=[
         ('', 'Select Size'),
         ('xs', 'XS'),
@@ -62,7 +62,7 @@ class AddItemForm(FlaskForm):
         ('12', '12'),
         ('one-size', 'One Size')
     ])
-    
+
     condition = SelectField('Condition', validators=[DataRequired()], choices=[
         ('', 'Select Condition'),
         ('excellent', 'Excellent - Like new'),
@@ -70,28 +70,28 @@ class AddItemForm(FlaskForm):
         ('fair', 'Fair - Noticeable wear'),
         ('poor', 'Poor - Significant wear')
     ])
-    
+
     color = StringField('Color', validators=[
         Optional(),
         Length(max=30, message='Color cannot exceed 30 characters')
     ])
-    
+
     brand = StringField('Brand', validators=[
         Optional(),
         Length(max=50, message='Brand cannot exceed 50 characters')
     ])
-    
+
     quantity = IntegerField('Quantity', validators=[
         DataRequired(message='Quantity is required'),
         NumberRange(min=1, max=50, message='Quantity must be between 1 and 50')
     ], default=1)
-    
+
     media_file = FileField('Upload Image or Video', validators=[
         FileRequired(message='Please upload an image or video'),
-        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'], 
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'],
                    message='Only image files (jpg, jpeg, png, gif) and video files (mp4, mov, avi, webm) are allowed')
     ])
-    
+
     submit = SubmitField('Add Item')
 
 class EditItemForm(FlaskForm):
@@ -99,12 +99,12 @@ class EditItemForm(FlaskForm):
         DataRequired(message='Title is required'),
         Length(min=3, max=100, message='Title must be between 3 and 100 characters')
     ])
-    
+
     description = TextAreaField('Description', validators=[
         Optional(),
         Length(max=500, message='Description cannot exceed 500 characters')
     ])
-    
+
     category = SelectField('Category', validators=[DataRequired()], choices=[
         ('', 'Select Category'),
         ('tops', 'Tops'),
@@ -119,7 +119,7 @@ class EditItemForm(FlaskForm):
         ('vintage', 'Vintage'),
         ('other', 'Other')
     ])
-    
+
     size = SelectField('Size', validators=[DataRequired()], choices=[
         ('', 'Select Size'),
         ('xs', 'XS'),
@@ -148,7 +148,7 @@ class EditItemForm(FlaskForm):
         ('12', '12'),
         ('one-size', 'One Size')
     ])
-    
+
     condition = SelectField('Condition', validators=[DataRequired()], choices=[
         ('', 'Select Condition'),
         ('excellent', 'Excellent - Like new'),
@@ -156,25 +156,25 @@ class EditItemForm(FlaskForm):
         ('fair', 'Fair - Noticeable wear'),
         ('poor', 'Poor - Significant wear')
     ])
-    
+
     color = StringField('Color', validators=[
         Optional(),
         Length(max=30, message='Color cannot exceed 30 characters')
     ])
-    
+
     brand = StringField('Brand', validators=[
         Optional(),
         Length(max=50, message='Brand cannot exceed 50 characters')
     ])
-    
+
     quantity = IntegerField('Quantity', validators=[
         DataRequired(message='Quantity is required'),
         NumberRange(min=1, max=50, message='Quantity must be between 1 and 50')
     ])
-    
+
     media_file = FileField('Upload New Image or Video (optional)', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'], 
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'],
                    message='Only image files (jpg, jpeg, png, gif) and video files (mp4, mov, avi, webm) are allowed')
     ])
-    
+
     submit = SubmitField('Update Item')

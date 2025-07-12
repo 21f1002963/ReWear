@@ -30,7 +30,7 @@ def dashboard():
         db.or_(Exchange.requester_id == current_user.id, Exchange.owner_id == current_user.id),
         Exchange.status.in_(['completed', 'accepted'])
     ).count()
-    
+
     user_stats = {
         'total_items_listed': Item.query.filter_by(user_id=current_user.id).count(),
         'total_swaps_completed': completed_exchanges_count,
@@ -47,12 +47,12 @@ def dashboard():
 
     # Get pending exchange requests count (requests received by this user)
     pending_requests_count = Exchange.query.filter_by(
-        owner_id=current_user.id, 
+        owner_id=current_user.id,
         status='pending'
     ).count()
 
-    return render_template('user/user_dashboard.html', 
-                         user_stats=user_stats, 
+    return render_template('user/user_dashboard.html',
+                         user_stats=user_stats,
                          recent_items=recent_items,
                          pending_requests_count=pending_requests_count)
 
@@ -106,7 +106,7 @@ def uploaded_items():
     # Get user's uploaded items
     page = request.args.get('page', 1, type=int)
     per_page = 12  # Show 12 items per page
-    
+
     items = Item.query.filter_by(user_id=current_user.id).order_by(Item.created_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
     )
@@ -132,19 +132,19 @@ def save_media_file(file):
         # Create unique filename
         filename = secure_filename(file.filename)
         unique_filename = f"{uuid.uuid4().hex}_{filename}"
-        
+
         # Determine media type
         video_extensions = ['.mp4', '.mov', '.avi', '.webm']
         media_type = 'video' if any(unique_filename.lower().endswith(ext) for ext in video_extensions) else 'image'
-        
+
         # Create upload directory if it doesn't exist
         upload_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'uploads', 'items')
         os.makedirs(upload_dir, exist_ok=True)
-        
+
         # Save file
         file_path = os.path.join(upload_dir, unique_filename)
         file.save(file_path)
-        
+
         return unique_filename, media_type
     return None, None
 
@@ -164,7 +164,7 @@ def add_item():
             media_type = None
             if form.media_file.data:
                 media_filename, media_type = save_media_file(form.media_file.data)
-            
+
             # Create new item
             new_item = Item(
                 title=form.title.data,
@@ -211,10 +211,10 @@ def edit_item(item_id):
                     old_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'uploads', 'items', item.media_filename)
                     if os.path.exists(old_file_path):
                         os.remove(old_file_path)
-                
+
                 # Save new file
                 item.media_filename, item.media_type = save_media_file(form.media_file.data)
-            
+
             # Update item
             item.title = form.title.data
             item.description = form.description.data
@@ -257,19 +257,19 @@ def delete_item(item_id):
         return redirect(url_for('admin.dashboard'))
 
     item = Item.query.filter_by(id=item_id, user_id=current_user.id).first_or_404()
-    
+
     try:
         # Delete media file if exists
         if item.media_filename:
             file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'uploads', 'items', item.media_filename)
             if os.path.exists(file_path):
                 os.remove(file_path)
-        
+
         # Delete item from database
         db.session.delete(item)
         db.session.commit()
         flash('Item deleted successfully!', 'success')
-        
+
     except Exception as e:
         db.session.rollback()
         flash('An error occurred while deleting your item. Please try again.', 'error')
@@ -283,24 +283,24 @@ def swap_history():
     """User swap history route"""
     if current_user.is_admin:
         return redirect(url_for('admin.dashboard'))
-    
+
     # Get completed exchanges (swaps) for the current user
     completed_exchanges = Exchange.query.filter(
         db.or_(Exchange.requester_id == current_user.id, Exchange.owner_id == current_user.id),
         Exchange.status.in_(['completed', 'accepted'])
     ).order_by(Exchange.completed_at.desc(), Exchange.updated_at.desc()).all()
-    
-    # Get pending exchanges  
+
+    # Get pending exchanges
     pending_exchanges = Exchange.query.filter(
         db.or_(Exchange.requester_id == current_user.id, Exchange.owner_id == current_user.id),
         Exchange.status == 'pending'
     ).order_by(Exchange.created_at.desc()).all()
-    
+
     # Calculate statistics
     total_swaps = len(completed_exchanges)
     total_points_earned = 0
     total_points_spent = 0
-    
+
     for exchange in completed_exchanges:
         if exchange.exchange_type == 'points':
             if exchange.owner_id == current_user.id:
@@ -309,7 +309,7 @@ def swap_history():
             elif exchange.requester_id == current_user.id:
                 # User spent points
                 total_points_spent += exchange.points_offered
-    
+
     swap_history_data = {
         'completed_swaps': completed_exchanges,
         'pending_swaps': pending_exchanges,
@@ -317,7 +317,7 @@ def swap_history():
         'total_points_earned': total_points_earned,
         'total_points_spent': total_points_spent
     }
-    
+
     return render_template('user/user_swapHistory.html', swap_data=swap_history_data)
 
 @user_bp.route('/browse')
@@ -328,36 +328,46 @@ def browse_items(category=None):
     page = request.args.get('page', 1, type=int)
     per_page = 12  # Show 12 items per page
     search = request.args.get('search', '', type=str)
-    
+
     # Base query for approved items only, excluding current user's items
     query = Item.query.filter(
         Item.moderation_status == 'approved',
         Item.status == 'available',
         Item.user_id != current_user.id
     )
-    
+
     # Apply category filter if specified
     if category:
         query = query.filter(Item.category == category)
-    
+
     # Apply search filter if specified
     if search:
         query = query.filter(
-            Item.title.contains(search) | 
+            Item.title.contains(search) |
             Item.description.contains(search) |
             Item.brand.contains(search)
         )
-    
+
     # Get paginated results
     items = query.order_by(Item.created_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
     )
-    
+
+    # Check for pending exchange requests for each item
+    pending_requests = {}
+    for item in items.items:
+        existing_request = Exchange.query.filter_by(
+            requester_id=current_user.id,
+            requested_item_id=item.id,
+            status='pending'
+        ).first()
+        pending_requests[item.id] = existing_request is not None
+
     # Get category counts for sidebar
     category_counts = {}
-    categories = ['tops', 'bottoms', 'dresses', 'outerwear', 'shoes', 'accessories', 
+    categories = ['tops', 'bottoms', 'dresses', 'outerwear', 'shoes', 'accessories',
                  'activewear', 'formal', 'casual', 'vintage', 'other']
-    
+
     for cat in categories:
         count = Item.query.filter(
             Item.moderation_status == 'approved',
@@ -366,7 +376,7 @@ def browse_items(category=None):
             Item.category == cat
         ).count()
         category_counts[cat] = count
-    
+
     # Category display names mapping
     category_names = {
         'tops': 'Tops & Shirts',
@@ -381,13 +391,14 @@ def browse_items(category=None):
         'vintage': 'Vintage',
         'other': 'Other'
     }
-    
-    return render_template('user/browse_items.html', 
-                         items=items, 
+
+    return render_template('user/browse_items.html',
+                         items=items,
                          current_category=category,
                          category_counts=category_counts,
                          category_names=category_names,
-                         search=search)
+                         search=search,
+                         pending_requests=pending_requests)
 
 # ===============================
 # EXCHANGE ROUTES
@@ -398,52 +409,52 @@ def browse_items(category=None):
 def request_exchange(item_id):
     """Request an exchange for an item"""
     item = Item.query.get_or_404(item_id)
-    
+
     # Prevent users from requesting their own items
     if item.user_id == current_user.id:
         return jsonify({'error': 'You cannot request exchange for your own item'}), 400
-    
+
     # Check if item is available and approved
     if item.status != 'available' or item.moderation_status != 'approved':
         return jsonify({'error': 'This item is not available for exchange'}), 400
-    
+
     # Check if exchange request already exists
     existing_request = Exchange.query.filter_by(
         requester_id=current_user.id,
         requested_item_id=item_id,
         status='pending'
     ).first()
-    
+
     if existing_request:
         return jsonify({'error': 'You already have a pending request for this item'}), 400
-    
+
     # Get form data
     exchange_type = request.json.get('exchange_type', 'points')
     offered_item_id = request.json.get('offered_item_id')
     points_offered = request.json.get('points_offered')
     message = request.json.get('message', '')
-    
+
     # Validate exchange type
     if exchange_type == 'item':
         if not offered_item_id:
             return jsonify({'error': 'Please select an item to offer'}), 400
-        
+
         offered_item = Item.query.get(offered_item_id)
         if not offered_item or offered_item.user_id != current_user.id:
             return jsonify({'error': 'Invalid offered item'}), 400
-        
+
         if offered_item.status != 'available':
             return jsonify({'error': 'The offered item is not available'}), 400
-            
+
     elif exchange_type == 'points':
         if not points_offered or points_offered <= 0:
             return jsonify({'error': 'Please specify valid points to offer'}), 400
-        
+
         if current_user.points_balance < points_offered:
             return jsonify({'error': 'Insufficient points balance'}), 400
     else:
         return jsonify({'error': 'Invalid exchange type'}), 400
-    
+
     # Create exchange request
     exchange = Exchange(
         requester_id=current_user.id,
@@ -455,7 +466,7 @@ def request_exchange(item_id):
         message=message,
         status='pending'
     )
-    
+
     try:
         db.session.add(exchange)
         db.session.commit()
@@ -471,11 +482,11 @@ def view_exchanges():
     # Get sent exchanges
     sent_exchanges = Exchange.query.filter_by(requester_id=current_user.id)\
                                   .order_by(Exchange.created_at.desc()).all()
-    
+
     # Get received exchanges
     received_exchanges = Exchange.query.filter_by(owner_id=current_user.id)\
                                       .order_by(Exchange.created_at.desc()).all()
-    
+
     return render_template('user/user_Requests.html',
                          sent_exchanges=sent_exchanges,
                          received_exchanges=received_exchanges)
@@ -485,43 +496,43 @@ def view_exchanges():
 def respond_to_exchange(exchange_id):
     """Respond to an exchange request (accept/reject)"""
     exchange = Exchange.query.get_or_404(exchange_id)
-    
+
     # Only the item owner can respond
     if exchange.owner_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
-    
+
     # Only pending exchanges can be responded to
     if exchange.status != 'pending':
         return jsonify({'error': 'This exchange request is no longer pending'}), 400
-    
+
     action = request.json.get('action')
-    
+
     if action == 'accepted':
         exchange.status = 'accepted'
-        
+
         # Handle the exchange logic
         if exchange.exchange_type == 'points':
             # Transfer points
             exchange.requester.points_balance -= exchange.points_offered
             current_user.points_balance += exchange.points_offered
-            
+
         # Mark items as exchanged
         exchange.requested_item.status = 'exchanged'
         if exchange.offered_item:
             exchange.offered_item.status = 'exchanged'
-            
+
         from datetime import datetime
         exchange.completed_at = datetime.utcnow()
         exchange.status = 'completed'
-        
+
         flash('Exchange request accepted and completed!', 'success')
-        
+
     elif action == 'rejected':
         exchange.status = 'rejected'
         flash('Exchange request rejected.', 'info')
     else:
         return jsonify({'error': 'Invalid action'}), 400
-    
+
     try:
         db.session.commit()
         return jsonify({'success': f'Exchange request {action} successfully!'}), 200
@@ -534,17 +545,17 @@ def respond_to_exchange(exchange_id):
 def cancel_exchange(exchange_id):
     """Cancel a sent exchange request"""
     exchange = Exchange.query.get_or_404(exchange_id)
-    
+
     # Only the requester can cancel
     if exchange.requester_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
-    
+
     # Only pending exchanges can be cancelled
     if exchange.status != 'pending':
         return jsonify({'error': 'This exchange request cannot be cancelled'}), 400
-    
+
     exchange.status = 'cancelled'
-    
+
     try:
         db.session.commit()
         flash('Exchange request cancelled.', 'info')
@@ -562,7 +573,7 @@ def get_user_items():
         status='available',
         moderation_status='approved'
     ).all()
-    
+
     items_data = []
     for item in items:
         items_data.append({
@@ -572,5 +583,5 @@ def get_user_items():
             'points_value': item.points_required,  # Using points_required field from Item model
             'media_filename': item.media_filename
         })
-    
+
     return jsonify(items_data)

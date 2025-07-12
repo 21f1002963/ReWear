@@ -503,14 +503,14 @@
   </div>
 </section>
 
-<section class="py-5" id="coded-pages">
+<section class="py-5" id="featured-items">
   <div class="container">
     <div class="row">
       <div class="row text-center my-sm-5 mt-5">
         <div class="col-lg-6 mx-auto">
-          <span class="badge bg-primary mb-3">Boost creativity</span>
-          <h2 class="">With our coded pages</h2>
-          <p class="lead">The easiest way to get started is to use one of our <br /> pre-built example pages. </p>
+          <span class="badge bg-primary mb-3">Featured Items</span>
+          <h2 class="">Discover Amazing Items</h2>
+          <p class="lead">Browse trending items from our community members <br /> and find your next favorite piece. </p>
         </div>
       </div>
     </div>
@@ -521,38 +521,62 @@
         <!-- First Row - 3 Cards -->
         <div class="row mt-4">
           <div class="col-lg-4 col-md-6 mb-4">
-            <a href="/about-us.html">
+            {% set featured_item_1 = featured_items[0] if featured_items and featured_items|length > 0 else None %}
+            <a href="{{ url_for('user.browse_items', category=featured_item_1.category) if featured_item_1 else url_for('user.browse_items') }}">
               <div class="card move-on-hover" style="height: 350px;">
-                <img class="w-100" style="height: 250px; object-fit: cover;"
-                  src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/assets/img/about-us.jpg"
-                  alt="aboutus">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                  <h6 class="mb-0 text-center">About Us Page</h6>
-                </div>
+                {% if featured_item_1 %}
+                  <img class="w-100" style="height: 250px; object-fit: cover;"
+                    src="/static/uploads/items/{{ featured_item_1.media_filename }}"
+                    alt="{{ featured_item_1.title }}">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center">{{ featured_item_1.category.title() }}</h6>
+                  </div>
+                {% else %}
+                  <div class="w-100" style="height: 250px; background-color: #000;"></div>
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center"></h6>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </div>
           <div class="col-lg-4 col-md-6 mb-4">
-            <a href="/contact-us.html">
+            {% set featured_item_2 = featured_items[1] if featured_items and featured_items|length > 1 else None %}
+            <a href="{{ url_for('user.browse_items', category=featured_item_2.category) if featured_item_2 else url_for('user.browse_items') }}">
               <div class="card move-on-hover" style="height: 350px;">
-                <img class="w-100" style="height: 250px; object-fit: cover;"
-                  src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/assets/img/contact-us.jpg"
-                  alt="contactus">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                  <h6 class="mb-0 text-center">Contact Us Page</h6>
-                </div>
+                {% if featured_item_2 %}
+                  <img class="w-100" style="height: 250px; object-fit: cover;"
+                    src="/static/uploads/items/{{ featured_item_2.media_filename }}"
+                    alt="{{ featured_item_2.title }}">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center">{{ featured_item_2.category.title() }}</h6>
+                  </div>
+                {% else %}
+                  <div class="w-100" style="height: 250px; background-color: #000;"></div>
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center"></h6>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </div>
           <div class="col-lg-4 col-md-6 mb-4">
-            <a href="/sign-in.html">
+            {% set featured_item_3 = featured_items[2] if featured_items and featured_items|length > 2 else None %}
+            <a href="{{ url_for('user.browse_items', category=featured_item_3.category) if featured_item_3 else url_for('user.browse_items') }}">
               <div class="card move-on-hover" style="height: 350px;">
-                <img class="w-100" style="height: 250px; object-fit: cover;"
-                  src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/assets/img/sign-in.jpg"
-                  alt="signin">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                  <h6 class="mb-0 text-center">Sign In Page</h6>
-                </div>
+                {% if featured_item_3 %}
+                  <img class="w-100" style="height: 250px; object-fit: cover;"
+                    src="/static/uploads/items/{{ featured_item_3.media_filename }}"
+                    alt="{{ featured_item_3.title }}">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center">{{ featured_item_3.category.title() }}</h6>
+                  </div>
+                {% else %}
+                  <div class="w-100" style="height: 250px; background-color: #000;"></div>
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center"></h6>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </div>
@@ -561,38 +585,62 @@
         <!-- Second Row - 3 Cards -->
         <div class="row">
           <div class="col-lg-4 col-md-6 mb-4">
-            <a href="/features.html">
+            {% set featured_item_4 = featured_items[3] if featured_items and featured_items|length > 3 else None %}
+            <a href="{{ url_for('user.browse_items', category=featured_item_4.category) if featured_item_4 else url_for('user.browse_items') }}">
               <div class="card move-on-hover" style="height: 350px;">
-                <img class="w-100" style="height: 250px; object-fit: cover;"
-                  src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/features.jpg"
-                  alt="features">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                  <h6 class="mb-0 text-center">Features Page</h6>
-                </div>
+                {% if featured_item_4 %}
+                  <img class="w-100" style="height: 250px; object-fit: cover;"
+                    src="/static/uploads/items/{{ featured_item_4.media_filename }}"
+                    alt="{{ featured_item_4.title }}">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center">{{ featured_item_4.category.title() }}</h6>
+                  </div>
+                {% else %}
+                  <div class="w-100" style="height: 250px; background-color: #000;"></div>
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center"></h6>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </div>
           <div class="col-lg-4 col-md-6 mb-4">
-            <a href="/pricing.html">
+            {% set featured_item_5 = featured_items[4] if featured_items and featured_items|length > 4 else None %}
+            <a href="{{ url_for('user.browse_items', category=featured_item_5.category) if featured_item_5 else url_for('user.browse_items') }}">
               <div class="card move-on-hover" style="height: 350px;">
-                <img class="w-100" style="height: 250px; object-fit: cover;"
-                  src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/pricing.jpg"
-                  alt="pricing">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                  <h6 class="mb-0 text-center">Pricing Page</h6>
-                </div>
+                {% if featured_item_5 %}
+                  <img class="w-100" style="height: 250px; object-fit: cover;"
+                    src="/static/uploads/items/{{ featured_item_5.media_filename }}"
+                    alt="{{ featured_item_5.title }}">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center">{{ featured_item_5.category.title() }}</h6>
+                  </div>
+                {% else %}
+                  <div class="w-100" style="height: 250px; background-color: #000;"></div>
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center"></h6>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </div>
           <div class="col-lg-4 col-md-6 mb-4">
-            <a href="/blog.html">
+            {% set featured_item_6 = featured_items[5] if featured_items and featured_items|length > 5 else None %}
+            <a href="{{ url_for('user.browse_items', category=featured_item_6.category) if featured_item_6 else url_for('user.browse_items') }}">
               <div class="card move-on-hover" style="height: 350px;">
-                <img class="w-100" style="height: 250px; object-fit: cover;"
-                  src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-design-system/presentation/sections/blogs.jpg"
-                  alt="blog">
-                <div class="card-body d-flex align-items-center justify-content-center">
-                  <h6 class="mb-0 text-center">Blog Page</h6>
-                </div>
+                {% if featured_item_6 %}
+                  <img class="w-100" style="height: 250px; object-fit: cover;"
+                    src="/static/uploads/items/{{ featured_item_6.media_filename }}"
+                    alt="{{ featured_item_6.title }}">
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center">{{ featured_item_6.category.title() }}</h6>
+                  </div>
+                {% else %}
+                  <div class="w-100" style="height: 250px; background-color: #000;"></div>
+                  <div class="card-body d-flex align-items-center justify-content-center">
+                    <h6 class="mb-0 text-center"></h6>
+                  </div>
+                {% endif %}
               </div>
             </a>
           </div>
@@ -716,35 +764,36 @@
     <div class=" row">
       <div class="col-md-3 mb-4 ms-auto">
         <div>
-          <a href="https://appseed.us/product/material-kit/flask/">
-            <img src="/static/assets/img/logo-ct-dark.png" class="mb-3 footer-logo" alt="main_logo">
+          <a href="{{ url_for('home_blueprint.home') }}">
+            <img src="/static/assets/img/logo-ct-dark.png" class="mb-3 footer-logo" alt="rewear_logo">
           </a>
           <h6 class="font-weight-bolder mb-4">ReWear</h6>
+          <p class="text-sm">Sustainable fashion through clothing exchange. Join our community and give your clothes a second life.</p>
         </div>
         <div>
           <ul class="d-flex flex-row ms-n3 nav">
             <li class="nav-item">
-              <a class="nav-link pe-1" href="https://www.facebook.com/CreativeTim" target="_blank">
+              <a class="nav-link pe-1" href="#" target="_blank">
                 <i class="fab fa-facebook text-lg opacity-8"></i>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pe-1" href="https://twitter.com/creativetim" target="_blank">
+              <a class="nav-link pe-1" href="#" target="_blank">
                 <i class="fab fa-twitter text-lg opacity-8"></i>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pe-1" href="https://dribbble.com/creativetim" target="_blank">
-                <i class="fab fa-dribbble text-lg opacity-8"></i>
+              <a class="nav-link pe-1" href="#" target="_blank">
+                <i class="fab fa-instagram text-lg opacity-8"></i>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pe-1" href="https://github.com/creativetimofficial" target="_blank">
-                <i class="fab fa-github text-lg opacity-8"></i>
+              <a class="nav-link pe-1" href="#" target="_blank">
+                <i class="fab fa-linkedin text-lg opacity-8"></i>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pe-1" href="https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w" target="_blank">
+              <a class="nav-link pe-1" href="#" target="_blank">
                 <i class="fab fa-youtube text-lg opacity-8"></i>
               </a>
             </li>
@@ -753,26 +802,26 @@
       </div>
       <div class="col-md-2 col-sm-6 col-6 mb-4">
         <div>
-          <h6 class="text-sm">Company</h6>
+          <h6 class="text-sm">Platform</h6>
           <ul class="flex-column ms-n3 nav">
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/presentation" target="_blank">
-                About Us
+              <a class="nav-link" href="#">
+                About ReWear
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/templates/free" target="_blank">
-                Freebies
+              <a class="nav-link" href="{{ url_for('user.browse_items') }}">
+                Browse Items
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/templates/premium" target="_blank">
-                Premium Tools
+              <a class="nav-link" href="{{ url_for('auth.register') }}">
+                Join Community
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/blog" target="_blank">
-                Blog
+              <a class="nav-link" href="#">
+                How It Works
               </a>
             </li>
           </ul>
@@ -780,48 +829,53 @@
       </div>
       <div class="col-md-2 col-sm-6 col-6 mb-4">
         <div>
-          <h6 class="text-sm">Resources</h6>
+          <h6 class="text-sm">Community</h6>
           <ul class="flex-column ms-n3 nav">
             <li class="nav-item">
-              <a class="nav-link" href="https://iradesign.io/" target="_blank">
-                Illustrations
+              <a class="nav-link" href="#">
+                Style Tips
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/bits" target="_blank">
-                Bits & Snippets
+              <a class="nav-link" href="#">
+                Sustainability Blog
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/affiliates/new" target="_blank">
-                Affiliate Program
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-2 col-sm-6 col-6 mb-4">
-        <div>
-          <h6 class="text-sm">Help & Support</h6>
-          <ul class="flex-column ms-n3 nav">
-            <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/contact-us" target="_blank">
+              <a class="nav-link" href="#">
                 Contact Us
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/knowledge-center" target="_blank">
-                Knowledge Center
+              <a class="nav-link" href="#">
+                Success Stories
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-6 col-6 mb-4">
+        <div>
+          <h6 class="text-sm">Support</h6>
+          <ul class="flex-column ms-n3 nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                FAQ
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://services.creative-tim.com/?ref=ct-mk2-footer" target="_blank">
-                Custom Development
+              <a class="nav-link" href="#">
+                Safety Guidelines
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/sponsorships" target="_blank">
-                Sponsorships
+              <a class="nav-link" href="#">
+                Shipping Guide
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                Size Guide
               </a>
             </li>
           </ul>
@@ -832,18 +886,18 @@
           <h6 class="text-sm">Legal</h6>
           <ul class="flex-column ms-n3 nav">
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/knowledge-center/terms-of-service" target="_blank">
+              <a class="nav-link" href="#">
                 Terms & Conditions
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/knowledge-center/privacy-policy" target="_blank">
+              <a class="nav-link" href="#">
                 Privacy Policy
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://www.creative-tim.com/license" target="_blank">
-                Licenses (EULA)
+              <a class="nav-link" href="#">
+                Exchange Policy
               </a>
             </li>
           </ul>
@@ -852,7 +906,7 @@
       <div class="col-12">
         <div class="text-center">
           <p class="text-dark my-4 text-sm font-weight-normal">
-            &copy; <a href="https://bit.ly/3fKQZaL" target="_blank">Creative Tim</a> - Coded By AppSeed.
+            &copy; 2024 ReWear - Sustainable Fashion Through Exchange.
           </p>
         </div>
       </div>

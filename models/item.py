@@ -23,32 +23,32 @@ class Item(db.Model):
     condition = db.Column(db.String(20), nullable=False)  # e.g., 'excellent', 'good', 'fair'
     color = db.Column(db.String(30), nullable=True)
     brand = db.Column(db.String(50), nullable=True)
-    
+
     # Item details
     quantity = db.Column(db.Integer, default=1, nullable=False)
-    
+
     # Item status
     status = db.Column(db.String(20), default='available', nullable=False)  # 'available', 'pending', 'exchanged', 'removed'
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    
+
     # Moderation fields
     moderation_status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
     moderation_notes = db.Column(db.Text, nullable=True)  # Admin notes for rejection or approval
     moderated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Admin who moderated
     moderated_at = db.Column(db.DateTime, nullable=True)  # When moderation occurred
-    
+
     # Point system - calculated based on category
     points_required = db.Column(db.Integer, nullable=False)
-    
+
     # Media storage
     media_filename = db.Column(db.String(100), nullable=True)  # Store filename only
     media_type = db.Column(db.String(10), nullable=True)  # 'image' or 'video'
-    
+
     # Relationships
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('items', lazy=True, cascade='all, delete-orphan'))
     moderator = db.relationship('User', foreign_keys=[moderated_by], backref=db.backref('moderated_items', lazy=True))
-    
+
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -85,7 +85,7 @@ class Item(db.Model):
             'vintage': 25,
             'other': 6
         }
-        
+
         # Condition multipliers
         condition_multipliers = {
             'excellent': 1.0,
@@ -93,10 +93,10 @@ class Item(db.Model):
             'fair': 0.6,
             'poor': 0.4
         }
-        
+
         base_points = category_points.get(self.category, 6)
         multiplier = condition_multipliers.get(self.condition, 0.8)
-        
+
         return max(1, int(base_points * multiplier))
 
     def get_media_url(self):

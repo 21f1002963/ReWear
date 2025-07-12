@@ -41,7 +41,7 @@
             </div>
             <div class="card-body">
               {% if not success %}
-              <form method="post" action="{{ url_for('auth.register') }}" role="form" class="text-start">
+              <form method="post" action="{{ url_for('auth.register', next=request.args.get('next')) }}" role="form" class="text-start">
                 {{ form.hidden_tag() }}
 
                 <div class="input-group input-group-outline my-3">
@@ -85,7 +85,7 @@
 
                 <p class="mt-4 text-sm text-center">
                   Already have an account?
-                  <a href="{{ url_for('auth.login') }}" class="text-primary text-gradient font-weight-bold">Sign IN</a>
+                  <a href="{{ url_for('auth.login', next=request.args.get('next')) }}" class="text-primary text-gradient font-weight-bold">Sign IN</a>
                 </p>
               </form>
 
@@ -95,7 +95,7 @@
                   <h5>Registration Successful!</h5>
                   <p>Your account has been created successfully.</p>
                 </div>
-                <a href="{{ url_for('auth.login') }}" class="btn bg-gradient-primary">Sign In Now</a>
+                <a href="{{ url_for('auth.login', next=request.args.get('next')) }}" class="btn bg-gradient-primary">Sign In Now</a>
               </div>
               {% endif %}
             </div>
