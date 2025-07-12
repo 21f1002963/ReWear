@@ -25,6 +25,73 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="/static/assets/css/material-kit.css?v=3.0.0" rel="stylesheet" />
 
+  <!-- Custom Banner Slideshow CSS -->
+  <style>
+    .banner-slideshow {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-image 1s ease-in-out;
+      /* Fallback background in case images don't load */
+      background-color: #667eea;
+    }
+    
+    .banner-slideshow.banner-1 {
+      background-image: url('/static/banner/banner.jpg');
+    }
+    
+    .banner-slideshow.banner-2 {
+      background-image: url('/static/banner/2.jpg');
+    }
+    
+    .banner-slideshow.banner-3 {
+      background-image: url('/static/banner/3.jpg');
+    }
+    
+    .banner-slideshow.banner-4 {
+      background-image: url('/static/banner/4.jpg');
+    }
+
+    /* Preload banner images for smoother transitions */
+    .banner-slideshow::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        url('/static/banner/banner.jpg'),
+        url('/static/banner/2.jpg'),
+        url('/static/banner/3.jpg'),
+        url('/static/banner/4.jpg');
+      background-size: 0 0;
+      z-index: -1;
+    }
+
+    /* Banner indicators */
+    .banner-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .banner-dot.active {
+      background-color: white;
+      transform: scale(1.2);
+      border-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .banner-dot:hover {
+      background-color: rgba(255, 255, 255, 0.8);
+      transform: scale(1.1);
+    }
+  </style>
+
 </head>
 
 <body class="presentation-page bg-gray-200">
@@ -54,8 +121,18 @@
   {% endwith %}
 
   <header class="header-2">
-    <div class="page-header min-vh-75 relative" style="background-image: url('/static/assets/img/bg2.jpg')">
+    <div class="page-header min-vh-75 relative banner-slideshow" id="bannerSlideshow">
       <span class="mask bg-gradient-primary opacity-4"></span>
+      
+      <!-- Banner indicators -->
+      <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4">
+        <div class="d-flex gap-2" id="bannerIndicators">
+          <span class="banner-dot active" data-banner="0"></span>
+          <span class="banner-dot" data-banner="1"></span>
+          <span class="banner-dot" data-banner="2"></span>
+          <span class="banner-dot" data-banner="3"></span>
+        </div>
+      </div>
       <div class="container">
         <div class="row">
           <div class="col-lg-7 text-center mx-auto">
@@ -1047,6 +1124,77 @@
       });
     }
   }
+
+  // Banner slideshow functionality
+  function initBannerSlideshow() {
+    const bannerElement = document.getElementById('bannerSlideshow');
+    const bannerClasses = ['banner-1', 'banner-2', 'banner-3', 'banner-4'];
+    const indicators = document.querySelectorAll('.banner-dot');
+    let currentIndex = 0;
+    let slideInterval;
+
+    // Set initial banner
+    bannerElement.classList.add(bannerClasses[currentIndex]);
+
+    // Function to update indicators
+    function updateIndicators() {
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentIndex);
+      });
+    }
+
+    // Function to change banner
+    function changeBanner(newIndex = null) {
+      // Remove current banner class
+      bannerElement.classList.remove(bannerClasses[currentIndex]);
+      
+      // Move to specified index or next banner
+      if (newIndex !== null) {
+        currentIndex = newIndex;
+      } else {
+        currentIndex = (currentIndex + 1) % bannerClasses.length;
+      }
+      
+      // Add new banner class
+      bannerElement.classList.add(bannerClasses[currentIndex]);
+      
+      // Update indicators
+      updateIndicators();
+    }
+
+    // Function to start auto-slideshow
+    function startSlideshow() {
+      slideInterval = setInterval(() => changeBanner(), 3000);
+    }
+
+    // Function to stop auto-slideshow
+    function stopSlideshow() {
+      clearInterval(slideInterval);
+    }
+
+    // Add click events to indicators
+    indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        stopSlideshow();
+        changeBanner(index);
+        // Restart slideshow after manual selection
+        setTimeout(startSlideshow, 5000);
+      });
+    });
+
+    // Pause slideshow on hover, resume on mouse leave
+    bannerElement.addEventListener('mouseenter', stopSlideshow);
+    bannerElement.addEventListener('mouseleave', startSlideshow);
+
+    // Initialize indicators and start slideshow
+    updateIndicators();
+    startSlideshow();
+  }
+
+  // Initialize banner slideshow when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    initBannerSlideshow();
+  });
 </script>
 </body>
 
