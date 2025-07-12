@@ -18,11 +18,11 @@ login_manager = LoginManager()
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
-    
+
     # Configure Flask-Login
-    login_manager.login_view = 'authentication.login'
+    login_manager.login_view = 'home_blueprint.home'  # Redirect to home page for now
     login_manager.login_message_category = 'info'
-    
+
     # User loader callback
     @login_manager.user_loader
     def load_user(user_id):
@@ -73,8 +73,8 @@ def create_app(config):
     basedir = os.path.abspath(os.path.dirname(__file__))
     template_folder = os.path.join(basedir, 'templates')
     static_folder = os.path.join(basedir, 'static_landing_site')
-    
-    app = Flask(__name__, 
+
+    app = Flask(__name__,
                 template_folder=template_folder,
                 static_folder=static_folder,
                 static_url_path='/static')  # Explicitly set the URL path for static files
