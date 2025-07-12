@@ -8,7 +8,7 @@
     background: #fff;
     background-image: none;
   }
-  
+
   .auth-wrapper::before {
     display: none;
   }
@@ -111,7 +111,7 @@
   }
 
   .dashboard-header {
-    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    background: linear-gradient(195deg, #ec407a 0%, #d81b60 100%);
     color: white;
     padding: 2rem;
     border-radius: 15px;
@@ -346,7 +346,7 @@
       <div class="row align-items-end">
         <div class="col-md-3">
           <label for="search" class="form-label fw-bold">Search Items</label>
-          <input type="text" class="form-control" id="search" name="search" 
+          <input type="text" class="form-control" id="search" name="search"
                  value="{{ search }}" placeholder="Search by title, description, brand, or username...">
         </div>
         <div class="col-md-2">
@@ -437,11 +437,11 @@
                   <i class="fas fa-tshirt"></i>
                 </div>
               {% endif %}
-              
+
               <span class="badge status-badge status-{{ item.status }} position-absolute top-0 end-0 m-2">
                 {{ item.status.title() }}
               </span>
-              
+
               <!-- Moderation Status Badge -->
               <span class="badge moderation-badge moderation-{{ item.moderation_status }} position-absolute top-0 start-0 m-2">
                 {% if item.moderation_status == 'pending' %}
@@ -452,23 +452,23 @@
                   <i class="fas fa-times me-1"></i>Rejected
                 {% endif %}
               </span>
-              
+
               <!-- Selection Checkbox -->
               <div class="position-absolute" style="bottom: 10px; left: 10px;">
                 <input type="checkbox" class="form-check-input item-checkbox" value="{{ item.id }}" style="transform: scale(1.2);">
               </div>
             </div>
-            
+
             <div class="card-body">
               <h6 class="card-title mb-2">{{ item.title }}</h6>
-              
+
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="badge bg-primary">{{ item.category.title() }}</span>
                 <span class="points-badge">
                   <i class="fas fa-coins me-1"></i>{{ item.points_required }}
                 </span>
               </div>
-              
+
               <div class="row text-center small text-muted mb-2">
                 <div class="col-6">
                   <i class="fas fa-expand-arrows-alt me-1"></i>{{ item.size }}
@@ -504,7 +504,7 @@
                   {{ item.description[:60] }}{% if item.description|length > 60 %}...{% endif %}
                 </p>
               {% endif %}
-              
+
               <!-- Moderation Actions -->
               <div class="d-flex gap-1 mt-2">
                 {% if item.moderation_status == 'pending' %}
@@ -693,12 +693,12 @@ let currentAction = null;
 function moderateItem(itemId, action) {
     currentItemId = itemId;
     currentAction = action;
-    
+
     const modal = new bootstrap.Modal(document.getElementById('moderationModal'));
     const title = document.getElementById('moderationModalTitle');
     const actionText = document.getElementById('moderationActionText');
     const confirmBtn = document.getElementById('confirmModerationBtn');
-    
+
     switch(action) {
         case 'approve':
             title.textContent = 'Approve Item';
@@ -719,7 +719,7 @@ function moderateItem(itemId, action) {
             confirmBtn.textContent = 'Remove';
             break;
     }
-    
+
     modal.show();
 }
 
@@ -729,16 +729,16 @@ function bulkModerate(action) {
         alert('Please select items to moderate.');
         return;
     }
-    
+
     const itemIds = Array.from(checkedBoxes).map(cb => cb.value);
     currentItemId = itemIds;
     currentAction = action;
-    
+
     const modal = new bootstrap.Modal(document.getElementById('moderationModal'));
     const title = document.getElementById('moderationModalTitle');
     const actionText = document.getElementById('moderationActionText');
     const confirmBtn = document.getElementById('confirmModerationBtn');
-    
+
     switch(action) {
         case 'approve':
             title.textContent = `Approve ${itemIds.length} Items`;
@@ -759,13 +759,13 @@ function bulkModerate(action) {
             confirmBtn.textContent = 'Remove All';
             break;
     }
-    
+
     modal.show();
 }
 
 document.getElementById('confirmModerationBtn').addEventListener('click', function() {
     const notes = document.getElementById('moderationNotes').value;
-    
+
     if (Array.isArray(currentItemId)) {
         // Bulk moderation
         fetch('/admin/bulk_moderate', {
@@ -816,7 +816,7 @@ document.getElementById('confirmModerationBtn').addEventListener('click', functi
             alert('An error occurred');
         });
     }
-    
+
     bootstrap.Modal.getInstance(document.getElementById('moderationModal')).hide();
 });
 
@@ -824,7 +824,7 @@ function showModerationNotes(notes, moderatedBy, moderatedAt) {
     document.getElementById('moderationNotesText').textContent = notes;
     document.getElementById('moderatedBy').textContent = moderatedBy;
     document.getElementById('moderatedAt').textContent = moderatedAt;
-    
+
     const modal = new bootstrap.Modal(document.getElementById('moderationNotesModal'));
     modal.show();
 }

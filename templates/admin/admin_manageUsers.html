@@ -8,7 +8,7 @@
     background: #fff;
     background-image: none;
   }
-  
+
   .auth-wrapper::before {
     display: none;
   }
@@ -111,7 +111,7 @@
   }
 
   .dashboard-header {
-    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    background: linear-gradient(195deg, #ec407a 0%, #d81b60 100%);
     color: white;
     padding: 2rem;
     border-radius: 15px;
@@ -222,7 +222,7 @@
       <div class="row align-items-end">
         <div class="col-md-10">
           <label for="search" class="form-label fw-bold">Search Users</label>
-          <input type="text" class="form-control" id="search" name="search" 
+          <input type="text" class="form-control" id="search" name="search"
                  value="{{ search }}" placeholder="Search by username, email, first name, or last name...">
         </div>
         <div class="col-md-2">
@@ -289,7 +289,7 @@
                 <div>
                   <form method="POST" action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" style="display: inline;">
                     {% if user.is_active %}
-                      <button type="submit" class="btn btn-sm btn-outline-warning" 
+                      <button type="submit" class="btn btn-sm btn-outline-warning"
                               onclick="return confirm('Are you sure you want to deactivate this user?')">
                         <i class="fas fa-user-times me-1"></i>Deactivate
                       </button>
