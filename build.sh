@@ -1,60 +1,42 @@
 #!/bin/bash
 
 # Build script for Render deployment
-set -e
 
-echo "🚀 Starting ReWear deployment build..."
+echo "Starting ReWear deployment..."
 
-# Upgrade pip
-echo "📦 Upgrading pip..."
+# Upgrade pip to latest version
+echo "Upgrading pip..."
 python -m pip install --upgrade pip
 
-# Install all dependencies
-echo "📋 Installing dependencies from requirements.txt..."
-pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+echo "Installing Python dependencies..."
+pip install -r requirements.txt
 
-# Verify installations
-echo "🔍 Verifying installations..."
-python -c "
-import sys
-import pkg_resources
+# Verify gunicorn installation
+echo "Verifying gunicorn installation..."
+pip show gunicorn || {
+    echo "Gunicorn not found, installing manually..."
+    pip install gunicorn==21.2.0
+}
 
-required = [
-    'Flask', 'Flask-Login', 'Flask-SQLAlchemy', 'Flask-Migrate',
-    'Flask-WTF', 'Flask-Bcrypt', 'gunicorn', 'psycopg2-binary'
-]
-
-installed = [pkg.project_name for pkg in pkg_resources.working_set]
-missing = [pkg for pkg in required if pkg not in installed]
-
-if missing:
-    print(f'❌ Missing packages: {missing}')
-    sys.exit(1)
-else:
-    print('✅ All required packages installed successfully')
-"
-
-# Initialize database
-echo "🗄️  Initializing database..."
+echo "Running database migrations..."
+# Initialize database if needed
 python -c "
 import os
+from app import app, db
+from flask_migrate import upgrade
 import sys
 
-print('Loading Flask app...')
-try:
-    from app import app, db
-    
-    with app.app_context():
+print('Initializing Flask app...')
+with app.app_context():
+    try:
+        # Create all tables
         print('Creating database tables...')
         db.create_all()
         print('✅ Database initialized successfully!')
-        
-except Exception as e:
-    print(f'❌ Database initialization failed: {e}')
-    # Don't exit here, let the app handle database creation at runtime
-    print('⚠️  Will attempt database creation at runtime')
-
-print('✅ Build completed successfully!')
+    except Exception as e:
+        print(f'❌ Database initialization failed: {e}')
+        sys.exit(1)
 "
 
-echo "🎉 Build process complete!"
+echo "✅ Build completed successfully!"

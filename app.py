@@ -1,8 +1,8 @@
 
 import os
-import sys
-from flask_migrate import Migrate
-from flask_minify import Minify
+from   flask_migrate import Migrate
+from   flask_minify  import Minify
+from   sys import exit
 
 from config import config_dict
 from __init__ import create_app, db
@@ -15,8 +15,7 @@ try:
     # Load the configuration using the default values
     app_config = config_dict[get_config_mode.capitalize()]
 except KeyError:
-    print('Error: Invalid <config_mode>. Expected values [Debug, Production]')
-    sys.exit(1)
+    exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
 
 app = create_app(app_config)
 Migrate(app, db)
