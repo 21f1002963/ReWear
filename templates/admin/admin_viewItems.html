@@ -1,0 +1,832 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}View Items - Admin | ReWear{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrapper {
+    background: #fff;
+    background-image: none;
+  }
+  
+  .auth-wrapper::before {
+    display: none;
+  }
+
+  #menu-toggle {
+    display: none;
+  }
+
+  .burger-btn {
+    position: fixed;
+    top: 12px;
+    left: 25px;
+    z-index: 2100;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .burger-btn:active, .burger-btn:focus {
+    background: #f0f0f0;
+    outline: none;
+  }
+
+  .slide-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding-top: 60px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .slide-menu ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .slide-menu li {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+
+  .slide-menu a {
+    color: #333;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  .slide-menu a:hover {
+    color: #3a7bd5;
+  }
+
+  .slide-menu a[href*="view_items"] {
+    color: #3a7bd5;
+    font-weight: 600;
+  }
+
+  .slide-menu a[href*="logout"] {
+    color: #dc3545;
+  }
+
+  .slide-menu a[href*="logout"]:hover {
+    color: #c82333;
+  }
+
+  #menu-toggle:checked ~ .slide-menu {
+    transform: translateX(0);
+  }
+
+  #menu-toggle:checked ~ .burger-btn {
+    display: none;
+  }
+
+  .dashboard-header {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+  }
+
+  .stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 1rem;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .stats-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .item-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .item-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .item-placeholder {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px 15px 0 0;
+    font-size: 2rem;
+    color: #666;
+  }
+
+  .status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .status-available {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .status-sold {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .moderation-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .moderation-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .moderation-approved {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .moderation-rejected {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .filter-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+
+  .points-badge {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #fff;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 576px) {
+    .slide-menu { width: 80vw; }
+    .burger-btn { left: 10px; top: 10px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<input type="checkbox" id="menu-toggle">
+<label for="menu-toggle" class="burger-btn" aria-label="Open menu">
+  <i class="fas fa-bars"></i>
+</label>
+<nav class="slide-menu" tabindex="-1">
+  <label for="menu-toggle" class="close-btn" aria-label="Close menu">&times;</label>
+  <ul>
+    <li><a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-home me-2"></i>Home</a></li>
+    <li><a href="{{ url_for('admin.edit_profile') }}"><i class="fas fa-user-edit me-2"></i>Edit Profile</a></li>
+    <li><a href="{{ url_for('admin.manage_users') }}"><i class="fas fa-users me-2"></i>Users</a></li>
+    <li><a href="{{ url_for('admin.view_items') }}"><i class="fas fa-tshirt me-2"></i>Items</a></li>
+    <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+  </ul>
+</nav>
+
+<div class="container mt-4">
+  <div class="dashboard-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="mb-1">
+          <i class="fas fa-tshirt me-2"></i>
+          Items Management
+        </h2>
+        <p class="mb-0" style="font-size: 16px;">View and manage all items uploaded by users</p>
+      </div>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-2">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #e3f2fd; color: #1976d2;">
+          <i class="fas fa-tshirt"></i>
+        </div>
+        <h3 class="mb-1">{{ item_stats.total_items }}</h3>
+        <p class="text-muted mb-0">Total Items</p>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #e8f5e9; color: #2e7d32;">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 class="mb-1">{{ item_stats.available_items }}</h3>
+        <p class="text-muted mb-0">Available</p>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #fff3cd; color: #856404;">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3 class="mb-1">{{ item_stats.pending_items }}</h3>
+        <p class="text-muted mb-0">Pending</p>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #ffebee; color: #c62828;">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h3 class="mb-1">{{ item_stats.sold_items }}</h3>
+        <p class="text-muted mb-0">Exchanged</p>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #f3e5f5; color: #7b1fa2;">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+        <h3 class="mb-1">{{ item_stats.pending_moderation }}</h3>
+        <p class="text-muted mb-0">Pending Review</p>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #e8f5e9; color: #388e3c;">
+          <i class="fas fa-thumbs-up"></i>
+        </div>
+        <h3 class="mb-1">{{ item_stats.approved_items }}</h3>
+        <p class="text-muted mb-0">Approved</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-card">
+    <form method="GET" id="filterForm">
+      <div class="row align-items-end">
+        <div class="col-md-3">
+          <label for="search" class="form-label fw-bold">Search Items</label>
+          <input type="text" class="form-control" id="search" name="search" 
+                 value="{{ search }}" placeholder="Search by title, description, brand, or username...">
+        </div>
+        <div class="col-md-2">
+          <label for="category" class="form-label fw-bold">Category</label>
+          <select class="form-select" id="category" name="category">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+              <option value="{{ cat }}" {{ 'selected' if cat == category_filter else '' }}>
+                {{ cat.title() }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label for="status" class="form-label fw-bold">Status</label>
+          <select class="form-select" id="status" name="status">
+            <option value="">All Statuses</option>
+            <option value="available" {{ 'selected' if status_filter == 'available' else '' }}>Available</option>
+            <option value="pending" {{ 'selected' if status_filter == 'pending' else '' }}>Pending</option>
+            <option value="sold" {{ 'selected' if status_filter == 'sold' else '' }}>Exchanged</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label for="moderation" class="form-label fw-bold">Moderation</label>
+          <select class="form-select" id="moderation" name="moderation">
+            <option value="">All</option>
+            <option value="pending" {{ 'selected' if moderation_filter == 'pending' else '' }}>Pending Review</option>
+            <option value="approved" {{ 'selected' if moderation_filter == 'approved' else '' }}>Approved</option>
+            <option value="rejected" {{ 'selected' if moderation_filter == 'rejected' else '' }}>Rejected</option>
+          </select>
+        </div>
+        <div class="col-md-1">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+        <div class="col-md-2">
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" id="selectAllBtn">
+              <i class="fas fa-check-square me-1"></i>Select All
+            </button>
+            <div class="dropdown">
+              <button class="btn btn-warning dropdown-toggle" type="button" id="bulkActionsBtn" data-bs-toggle="dropdown" disabled>
+                <i class="fas fa-cog me-1"></i>Bulk Actions
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="bulkModerate('approve')">
+                  <i class="fas fa-check text-success me-2"></i>Approve Selected
+                </a></li>
+                <li><a class="dropdown-item" href="#" onclick="bulkModerate('reject')">
+                  <i class="fas fa-times text-warning me-2"></i>Reject Selected
+                </a></li>
+                <li><a class="dropdown-item" href="#" onclick="bulkModerate('remove')">
+                  <i class="fas fa-trash text-danger me-2"></i>Remove Selected
+                </a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Items Grid -->
+  {% if items.items %}
+    <div class="row">
+      {% for item in items.items %}
+        <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+          <div class="card item-card">
+            <div class="position-relative">
+              {% if item.media_filename %}
+                {% if item.is_image() %}
+                  <img src="{{ item.get_media_url() }}" alt="{{ item.title }}" class="item-image">
+                {% elif item.is_video() %}
+                  <video class="item-image" muted>
+                    <source src="{{ item.get_media_url() }}" type="{{ item.media_type }}">
+                  </video>
+                  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 1.5rem;">
+                    <i class="fas fa-play-circle"></i>
+                  </div>
+                {% else %}
+                  <div class="item-placeholder">
+                    <i class="fas fa-tshirt"></i>
+                  </div>
+                {% endif %}
+              {% else %}
+                <div class="item-placeholder">
+                  <i class="fas fa-tshirt"></i>
+                </div>
+              {% endif %}
+              
+              <span class="badge status-badge status-{{ item.status }} position-absolute top-0 end-0 m-2">
+                {{ item.status.title() }}
+              </span>
+              
+              <!-- Moderation Status Badge -->
+              <span class="badge moderation-badge moderation-{{ item.moderation_status }} position-absolute top-0 start-0 m-2">
+                {% if item.moderation_status == 'pending' %}
+                  <i class="fas fa-hourglass-half me-1"></i>Pending Review
+                {% elif item.moderation_status == 'approved' %}
+                  <i class="fas fa-check me-1"></i>Approved
+                {% elif item.moderation_status == 'rejected' %}
+                  <i class="fas fa-times me-1"></i>Rejected
+                {% endif %}
+              </span>
+              
+              <!-- Selection Checkbox -->
+              <div class="position-absolute" style="bottom: 10px; left: 10px;">
+                <input type="checkbox" class="form-check-input item-checkbox" value="{{ item.id }}" style="transform: scale(1.2);">
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <h6 class="card-title mb-2">{{ item.title }}</h6>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-primary">{{ item.category.title() }}</span>
+                <span class="points-badge">
+                  <i class="fas fa-coins me-1"></i>{{ item.points_required }}
+                </span>
+              </div>
+              
+              <div class="row text-center small text-muted mb-2">
+                <div class="col-6">
+                  <i class="fas fa-expand-arrows-alt me-1"></i>{{ item.size }}
+                </div>
+                <div class="col-6">
+                  <i class="fas fa-boxes me-1"></i>Qty: {{ item.quantity }}
+                </div>
+              </div>
+
+              {% if item.color %}
+                <p class="small text-muted mb-2">
+                  <i class="fas fa-palette me-1"></i>{{ item.color.title() }}
+                </p>
+              {% endif %}
+
+              <div class="border-top pt-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <small class="text-muted">
+                      <i class="fas fa-user me-1"></i>{{ item.user.username }}
+                    </small>
+                  </div>
+                  <div>
+                    <small class="text-muted">
+                      {{ item.created_at.strftime('%b %d, %Y') }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              {% if item.description %}
+                <p class="small text-muted mt-2 mb-2">
+                  {{ item.description[:60] }}{% if item.description|length > 60 %}...{% endif %}
+                </p>
+              {% endif %}
+              
+              <!-- Moderation Actions -->
+              <div class="d-flex gap-1 mt-2">
+                {% if item.moderation_status == 'pending' %}
+                  <button class="btn btn-success btn-sm" onclick="moderateItem({{ item.id }}, 'approve')" title="Approve">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button class="btn btn-warning btn-sm" onclick="moderateItem({{ item.id }}, 'reject')" title="Reject">
+                    <i class="fas fa-times"></i>
+                  </button>
+                {% endif %}
+                <button class="btn btn-danger btn-sm" onclick="moderateItem({{ item.id }}, 'remove')" title="Remove">
+                  <i class="fas fa-trash"></i>
+                </button>
+                {% if item.moderation_notes %}
+                  <button class="btn btn-info btn-sm" onclick="showModerationNotes('{{ item.moderation_notes|escape }}', '{{ item.moderator.username if item.moderator else 'System' }}', '{{ item.moderated_at.strftime('%b %d, %Y at %I:%M %p') if item.moderated_at else '' }}')" title="View Notes">
+                    <i class="fas fa-sticky-note"></i>
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if items.pages > 1 %}
+      <nav aria-label="Items pagination">
+        <ul class="pagination justify-content-center">
+          {% if items.has_prev %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('admin.view_items', page=items.prev_num, search=search, category=category_filter, status=status_filter, moderation=moderation_filter) }}">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            </li>
+          {% endif %}
+
+          {% for page_num in items.iter_pages() %}
+            {% if page_num %}
+              {% if page_num != items.page %}
+                <li class="page-item">
+                  <a class="page-link" href="{{ url_for('admin.view_items', page=page_num, search=search, category=category_filter, status=status_filter, moderation=moderation_filter) }}">
+                    {{ page_num }}
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item active">
+                  <span class="page-link">{{ page_num }}</span>
+                </li>
+              {% endif %}
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if items.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('admin.view_items', page=items.next_num, search=search, category=category_filter, status=status_filter, moderation=moderation_filter) }}">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+
+  {% else %}
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-tshirt fa-4x text-muted mb-3"></i>
+        <h4>No Items Found</h4>
+        <p class="text-muted">
+          {% if search or category_filter or status_filter %}
+            No items match your current filters. Try adjusting your search criteria.
+          {% else %}
+            No items have been uploaded yet.
+          {% endif %}
+        </p>
+        {% if search or category_filter or status_filter %}
+          <a href="{{ url_for('admin.view_items') }}" class="btn btn-primary">
+            <i class="fas fa-times me-2"></i>Clear Filters
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Moderation Notes Modal -->
+<div class="modal fade" id="moderationNotesModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Moderation Notes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Moderated By:</label>
+          <p id="moderatedBy" class="mb-2"></p>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Moderated At:</label>
+          <p id="moderatedAt" class="mb-2"></p>
+        </div>
+        <div>
+          <label class="form-label fw-bold">Notes:</label>
+          <p id="moderationNotesText"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Moderation Action Modal -->
+<div class="modal fade" id="moderationModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="moderationModalTitle">Moderate Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="moderationNotes" class="form-label">Notes (Optional)</label>
+          <textarea class="form-control" id="moderationNotes" rows="3" placeholder="Add any notes about this moderation action..."></textarea>
+        </div>
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>
+          <span id="moderationActionText"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn" id="confirmModerationBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form when filters change
+    const filterSelects = document.querySelectorAll('#category, #status, #moderation');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+
+    // Checkbox selection functionality
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const bulkActionsBtn = document.getElementById('bulkActionsBtn');
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+
+    // Update bulk actions button state
+    function updateBulkActionsState() {
+        const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+        bulkActionsBtn.disabled = checkedCount === 0;
+        selectAllBtn.textContent = checkedCount === itemCheckboxes.length ? 'Deselect All' : 'Select All';
+    }
+
+    // Select/Deselect all functionality
+    selectAllBtn.addEventListener('click', function() {
+        const allChecked = document.querySelectorAll('.item-checkbox:checked').length === itemCheckboxes.length;
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+        });
+        updateBulkActionsState();
+    });
+
+    // Individual checkbox change
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActionsState);
+    });
+
+    // Initialize state
+    updateBulkActionsState();
+});
+
+let currentItemId = null;
+let currentAction = null;
+
+function moderateItem(itemId, action) {
+    currentItemId = itemId;
+    currentAction = action;
+    
+    const modal = new bootstrap.Modal(document.getElementById('moderationModal'));
+    const title = document.getElementById('moderationModalTitle');
+    const actionText = document.getElementById('moderationActionText');
+    const confirmBtn = document.getElementById('confirmModerationBtn');
+    
+    switch(action) {
+        case 'approve':
+            title.textContent = 'Approve Item';
+            actionText.textContent = 'This will approve the item and make it visible to users.';
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.textContent = 'Approve';
+            break;
+        case 'reject':
+            title.textContent = 'Reject Item';
+            actionText.textContent = 'This will reject the item and hide it from users.';
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.textContent = 'Reject';
+            break;
+        case 'remove':
+            title.textContent = 'Remove Item';
+            actionText.textContent = 'This will permanently remove the item from the platform.';
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.textContent = 'Remove';
+            break;
+    }
+    
+    modal.show();
+}
+
+function bulkModerate(action) {
+    const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+    if (checkedBoxes.length === 0) {
+        alert('Please select items to moderate.');
+        return;
+    }
+    
+    const itemIds = Array.from(checkedBoxes).map(cb => cb.value);
+    currentItemId = itemIds;
+    currentAction = action;
+    
+    const modal = new bootstrap.Modal(document.getElementById('moderationModal'));
+    const title = document.getElementById('moderationModalTitle');
+    const actionText = document.getElementById('moderationActionText');
+    const confirmBtn = document.getElementById('confirmModerationBtn');
+    
+    switch(action) {
+        case 'approve':
+            title.textContent = `Approve ${itemIds.length} Items`;
+            actionText.textContent = `This will approve ${itemIds.length} selected items.`;
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.textContent = 'Approve All';
+            break;
+        case 'reject':
+            title.textContent = `Reject ${itemIds.length} Items`;
+            actionText.textContent = `This will reject ${itemIds.length} selected items.`;
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.textContent = 'Reject All';
+            break;
+        case 'remove':
+            title.textContent = `Remove ${itemIds.length} Items`;
+            actionText.textContent = `This will permanently remove ${itemIds.length} selected items.`;
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.textContent = 'Remove All';
+            break;
+    }
+    
+    modal.show();
+}
+
+document.getElementById('confirmModerationBtn').addEventListener('click', function() {
+    const notes = document.getElementById('moderationNotes').value;
+    
+    if (Array.isArray(currentItemId)) {
+        // Bulk moderation
+        fetch('/admin/bulk_moderate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item_ids: currentItemId,
+                action: currentAction,
+                notes: notes
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    } else {
+        // Single item moderation
+        fetch(`/admin/moderate_item/${currentItemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: currentAction,
+                notes: notes
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    
+    bootstrap.Modal.getInstance(document.getElementById('moderationModal')).hide();
+});
+
+function showModerationNotes(notes, moderatedBy, moderatedAt) {
+    document.getElementById('moderationNotesText').textContent = notes;
+    document.getElementById('moderatedBy').textContent = moderatedBy;
+    document.getElementById('moderatedAt').textContent = moderatedAt;
+    
+    const modal = new bootstrap.Modal(document.getElementById('moderationNotesModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

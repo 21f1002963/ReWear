@@ -213,7 +213,7 @@
 
   <!-- User Stats Cards -->
   <div class="row mb-4">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="profile-card border-0">
         <div class="card-body text-center">
           <div class="stats-icon mx-auto mb-3" style="background: #e3f2fd; color: #1976d2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -224,7 +224,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="profile-card border-0">
         <div class="card-body text-center">
           <div class="stats-icon mx-auto mb-3" style="background: #e8f5e9; color: #2e7d32; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -235,7 +235,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="profile-card border-0">
         <div class="card-body text-center">
           <div class="stats-icon mx-auto mb-3" style="background: #fff3e0; color: #ef6c00; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -246,14 +246,36 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="profile-card border-0">
         <div class="card-body text-center">
           <div class="stats-icon mx-auto mb-3" style="background: #ffebee; color: #c62828; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-search"></i>
+            <i class="fas fa-check-circle"></i>
           </div>
           <h4>{{ user_stats.items_available }}</h4>
-          <p class="text-muted">Items Available</p>
+          <p class="text-muted">Available</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="profile-card border-0">
+        <div class="card-body text-center">
+          <div class="stats-icon mx-auto mb-3" style="background: #fff3cd; color: #856404; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-hourglass-half"></i>
+          </div>
+          <h4>{{ user_stats.items_pending_review }}</h4>
+          <p class="text-muted">Pending Review</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="profile-card border-0">
+        <div class="card-body text-center">
+          <div class="stats-icon mx-auto mb-3" style="background: #e8f5e9; color: #388e3c; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-thumbs-up"></i>
+          </div>
+          <h4>{{ user_stats.items_approved }}</h4>
+          <p class="text-muted">Approved</p>
         </div>
       </div>
     </div>
@@ -340,6 +362,21 @@
                 </div>
               {% endif %}
               <span class="badge bg-success position-absolute top-0 end-0 m-2">{{ item.status.title() }}</span>
+              
+              <!-- Moderation Status Badge -->
+              <span class="badge position-absolute top-0 start-0 m-2 
+                     {% if item.moderation_status == 'pending' %}bg-warning
+                     {% elif item.moderation_status == 'approved' %}bg-success
+                     {% elif item.moderation_status == 'rejected' %}bg-danger
+                     {% endif %}">
+                {% if item.moderation_status == 'pending' %}
+                  <i class="fas fa-hourglass-half me-1"></i>Pending Review
+                {% elif item.moderation_status == 'approved' %}
+                  <i class="fas fa-check me-1"></i>Approved
+                {% elif item.moderation_status == 'rejected' %}
+                  <i class="fas fa-times me-1"></i>Rejected
+                {% endif %}
+              </span>
             </div>
             <div class="card-body">
               <h6 class="card-title">{{ item.title }}</h6>

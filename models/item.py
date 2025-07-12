@@ -31,6 +31,12 @@ class Item(db.Model):
     status = db.Column(db.String(20), default='available', nullable=False)  # 'available', 'pending', 'exchanged', 'removed'
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     
+    # Moderation fields
+    moderation_status = db.Column(db.String(20), default='pending', nullable=False)  # 'pending', 'approved', 'rejected'
+    moderation_notes = db.Column(db.Text, nullable=True)  # Admin notes for rejection or approval
+    moderated_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Admin who moderated
+    moderated_at = db.Column(db.DateTime, nullable=True)  # When moderation occurred
+    
     # Point system - calculated based on category
     points_required = db.Column(db.Integer, nullable=False)
     
@@ -40,7 +46,8 @@ class Item(db.Model):
     
     # Relationships
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('items', lazy=True, cascade='all, delete-orphan'))
+    user = db.relationship('User', foreign_keys=[user_id], backref=db.backref('items', lazy=True, cascade='all, delete-orphan'))
+    moderator = db.relationship('User', foreign_keys=[moderated_by], backref=db.backref('moderated_items', lazy=True))
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -59,6 +66,8 @@ class Item(db.Model):
         self.points_required = self.calculate_points()
         self.media_filename = kwargs.get('media_filename')
         self.media_type = kwargs.get('media_type')
+        # Set default moderation status to pending for new items
+        self.moderation_status = kwargs.get('moderation_status', 'pending')
 
     def calculate_points(self):
         """Calculate points based on category and condition"""

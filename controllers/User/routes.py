@@ -30,9 +30,11 @@ def dashboard():
         'total_swaps_completed': 0,  # Will be updated when Swap model is added
         'total_points_earned': current_user.points_balance,
         'items_available': Item.query.filter_by(user_id=current_user.id, status='available').count(),
+        'items_pending_review': Item.query.filter_by(user_id=current_user.id, moderation_status='pending').count(),
+        'items_approved': Item.query.filter_by(user_id=current_user.id, moderation_status='approved').count(),
     }
 
-    # Get recent items (last 6 items) for display
+    # Get recent items (last 6 items) for display - show all items to owner
     recent_items = Item.query.filter_by(user_id=current_user.id)\
                             .order_by(Item.created_at.desc())\
                             .limit(6).all()

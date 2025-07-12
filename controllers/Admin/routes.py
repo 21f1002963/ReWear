@@ -10,6 +10,8 @@ from __init__ import db
 from models.user import User
 from models.item import Item
 from forms.auth_forms import ProfileForm
+from datetime import datetime
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app, jsonify
 
 # Create the admin blueprint
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -80,7 +82,7 @@ def manage_users():
         page=page, per_page=20, error_out=False
     )
 
-    return render_template('admin/manage_users.html', users=users, search=search)
+    return render_template('admin/admin_manageUsers.html', users=users, search=search)
 
 @admin_bp.route('/users/<int:user_id>/toggle-status', methods=['POST'])
 @login_required
@@ -157,3 +159,158 @@ def edit_profile():
     form.address.data = current_user.address
 
     return render_template('admin/admin_editprofile.html', form=form)
+
+@admin_bp.route('/items')
+@login_required
+@admin_required
+def view_items():
+    """View all items route"""
+    page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '', type=str)
+    category_filter = request.args.get('category', '', type=str)
+    status_filter = request.args.get('status', '', type=str)
+    moderation_filter = request.args.get('moderation', '', type=str)
+
+    query = Item.query.join(User, Item.user_id == User.id)
+
+    # Apply search filter
+    if search:
+        query = query.filter(
+            (Item.title.contains(search)) |
+            (Item.description.contains(search)) |
+            (Item.category.contains(search)) |
+            (Item.brand.contains(search)) |
+            (User.username.contains(search))
+        )
+
+    # Apply category filter
+    if category_filter:
+        query = query.filter(Item.category == category_filter)
+
+    # Apply status filter
+    if status_filter:
+        query = query.filter(Item.status == status_filter)
+    
+    # Apply moderation filter
+    if moderation_filter:
+        query = query.filter(Item.moderation_status == moderation_filter)
+
+    items = query.order_by(Item.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+
+    # Get unique categories for filter dropdown
+    categories = db.session.query(Item.category.distinct()).all()
+    categories = [cat[0] for cat in categories if cat[0]]
+
+    # Get item statistics
+    item_stats = {
+        'total_items': Item.query.count(),
+        'available_items': Item.query.filter_by(status='available').count(),
+        'pending_items': Item.query.filter_by(status='pending').count(),
+        'sold_items': Item.query.filter_by(status='sold').count(),
+        'pending_moderation': Item.query.filter_by(moderation_status='pending').count(),
+        'approved_items': Item.query.filter_by(moderation_status='approved').count(),
+        'rejected_items': Item.query.filter_by(moderation_status='rejected').count(),
+    }
+
+    return render_template('admin/admin_viewItems.html', 
+                         items=items, 
+                         search=search,
+                         category_filter=category_filter,
+                         status_filter=status_filter,
+                         moderation_filter=moderation_filter,
+                         categories=categories,
+                         item_stats=item_stats)
+
+@admin_bp.route('/moderate_item/<int:item_id>', methods=['POST'])
+@login_required
+@admin_required
+def moderate_item(item_id):
+    """Moderate an item (approve, reject, or remove)"""
+    try:
+        item = Item.query.get_or_404(item_id)
+        action = request.json.get('action')
+        notes = request.json.get('notes', '')
+        
+        if action not in ['approve', 'reject', 'remove']:
+            return jsonify({'success': False, 'message': 'Invalid action'}), 400
+        
+        # Update item moderation status
+        if action == 'approve':
+            item.moderation_status = 'approved'
+            item.is_active = True
+            message = 'Item approved successfully'
+        elif action == 'reject':
+            item.moderation_status = 'rejected'
+            item.is_active = False
+            message = 'Item rejected successfully'
+        elif action == 'remove':
+            item.moderation_status = 'rejected'
+            item.is_active = False
+            item.status = 'removed'
+            message = 'Item removed successfully'
+        
+        # Update moderation fields
+        item.moderation_notes = notes
+        item.moderated_by = current_user.id
+        item.moderated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True, 
+            'message': message,
+            'new_status': item.moderation_status
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error moderating item {item_id}: {str(e)}")
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'An error occurred'}), 500
+
+
+@admin_bp.route('/bulk_moderate', methods=['POST'])
+@login_required
+@admin_required
+def bulk_moderate():
+    """Bulk moderate multiple items"""
+    try:
+        item_ids = request.json.get('item_ids', [])
+        action = request.json.get('action')
+        notes = request.json.get('notes', '')
+        
+        if not item_ids or action not in ['approve', 'reject', 'remove']:
+            return jsonify({'success': False, 'message': 'Invalid request'}), 400
+        
+        items = Item.query.filter(Item.id.in_(item_ids)).all()
+        success_count = 0
+        
+        for item in items:
+            if action == 'approve':
+                item.moderation_status = 'approved'
+                item.is_active = True
+            elif action == 'reject':
+                item.moderation_status = 'rejected'
+                item.is_active = False
+            elif action == 'remove':
+                item.moderation_status = 'rejected'
+                item.is_active = False
+                item.status = 'removed'
+            
+            item.moderation_notes = notes
+            item.moderated_by = current_user.id
+            item.moderated_at = datetime.utcnow()
+            success_count += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{success_count} items {action}d successfully'
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error bulk moderating items: {str(e)}")
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'An error occurred'}), 500
