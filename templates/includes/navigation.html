@@ -16,29 +16,6 @@
             </button>
             <div class="collapse navbar-collapse pt-3 pb-2 py-lg-0 w-100" id="navigation">
               <ul class="navbar-nav navbar-nav-hover ms-auto">
-                <li class="nav-item dropdown dropdown-hover mx-2">
-                  <a class="nav-link ps-2 d-flex cursor-pointer align-items-center" id="dropdownMenuPages" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="material-icons opacity-6 me-2 text-md">dashboard</i>
-                    Pages
-                    <img src="/static/assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow ms-auto ms-md-2">
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-animation ms-n3 dropdown-md p-3 border-radius-xl mt-0 mt-lg-3" aria-labelledby="dropdownMenuPages">
-                    <div class="d-none d-lg-block">
-                      <h6 class="dropdown-header text-dark font-weight-bolder d-flex align-items-center px-1">
-                        Landing Pages
-                      </h6>
-                      <a href="/about-us.html" class="dropdown-item border-radius-md">
-                        <span>About Us</span>
-                      </a>
-                      <a href="/contact-us.html" class="dropdown-item border-radius-md">
-                        <span>Contact Us</span>
-                      </a>
-                      <a href="/author.html" class="dropdown-item border-radius-md">
-                        <span>Author</span>
-                      </a>
-                    </div>
-                  </div>
-                </li>
                 <li class="nav-item mx-2">
                   <a class="nav-link ps-2 d-flex cursor-pointer align-items-center" href="#sections-collection" onclick="smoothScrollToSections(event)">
                     <i class="material-icons opacity-6 me-2 text-md">featured_play_list</i>
@@ -54,7 +31,8 @@
                 </li>
                 {% endif %}
                 <li class="nav-item mx-2">
-                  <a class="nav-link ps-2 d-flex cursor-pointer align-items-center" href="#coded-pages" onclick="smoothScrollToCodedPages(event)">
+                  <a class="nav-link ps-2 d-flex cursor-pointer align-items-center" href="#featured-items" onclick="smoothScrollToFeaturedItems(event)">
+                    <i class="material-icons opacity-6 me-2 text-md">inventory_2</i>
                     Items
                   </a>
                 </li>

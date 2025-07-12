@@ -1023,6 +1023,30 @@
       console.error(countUp2.error);
     };
   }
+
+  // Smooth scroll function for Featured Items
+  function smoothScrollToFeaturedItems(event) {
+    event.preventDefault();
+    const targetElement = document.getElementById('featured-items');
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
+
+  // Smooth scroll function for Categories (sections-collection)
+  function smoothScrollToSections(event) {
+    event.preventDefault();
+    const targetElement = document.getElementById('sections-collection');
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
 </script>
 </body>
 
