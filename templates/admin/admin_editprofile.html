@@ -213,7 +213,7 @@
                                     </span>
                                     <div class="form-floating flex-grow-1">
                                         <input type="text" class="form-control readonly-field" id="username"
-                                            name="username" value="{{ user.username }}" required readonly>
+                                            name="username" value="{{ current_user.username }}" required readonly>
                                         <label for="username">Username</label>
                                     </div>
                                 </div>
@@ -228,7 +228,7 @@
                                     </span>
                                     <div class="form-floating flex-grow-1">
                                         <input type="email" class="form-control readonly-field" id="email" name="email"
-                                            value="{{ user.email }}" required readonly>
+                                            value="{{ current_user.email }}" required readonly>
                                         <label for="email">Email</label>
                                     </div>
                                 </div>
@@ -239,13 +239,13 @@
                                         <i class="fas fa-phone"></i>
                                     </span>
                                     <div class="form-floating flex-grow-1">
-                                        <input type="tel" class="form-control" id="mobile_number" name="mobile_number"
-                                            value="{{ user.mobile_number }}" pattern="[0-9]{10}"
-                                            placeholder="Enter 10-digit mobile number">
-                                        <label for="mobile_number">Mobile Number</label>
+                                        <input type="tel" class="form-control" id="phone_number" name="phone_number"
+                                            value="{{ current_user.phone_number }}" pattern="[0-9]{10}"
+                                            placeholder="Enter 10-digit phone number">
+                                        <label for="phone_number">Phone Number</label>
                                     </div>
                                 </div>
-                                <small class="form-text">Enter your 10-digit mobile number</small>
+                                <small class="form-text">Enter your 10-digit phone number</small>
                             </div>
                         </div>
 
@@ -257,27 +257,13 @@
                                 <div class="form-floating flex-grow-1">
                                     <textarea class="form-control" id="address" name="address" rows="2"
                                         placeholder="Enter your address"
-                                        style="height: 90px; padding-top: 25px;">{{ user.address }}</textarea>
+                                        style="height: 90px; padding-top: 25px;">{{ current_user.address }}</textarea>
                                     <label for="address">Address</label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-map-pin"></i>
-                                    </span>
-                                    <div class="form-floating flex-grow-1">
-                                        <input type="text" class="form-control" id="pin_code" name="pin_code"
-                                            value="{{ user.pin_code }}" pattern="[0-9]{6}"
-                                            placeholder="Enter 6-digit PIN code">
-                                        <label for="pin_code">PIN Code</label>
-                                    </div>
-                                </div>
-                                <small class="form-text">Enter your 6-digit PIN code</small>
-                            </div>
                             <div class="col-md-6 mb-3">
                                 <div class="input-group">
                                     <span class="input-group-text">

@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from __init__ import db
 from models.user import User
+from models.item import Item
 from forms.auth_forms import ProfileForm
 
 # Create the admin blueprint
@@ -28,11 +29,12 @@ def admin_required(f):
 @admin_required
 def dashboard():
     """Admin dashboard route"""
-    # Get platform statistics
-    total_users = User.query.count()
-    active_users = User.query.filter_by(is_active=True).count()
+    # Get platform statistics (excluding admin users)
+    total_users = User.query.filter_by(is_admin=False).count()
+    active_users = User.query.filter_by(is_active=True, is_admin=False).count()
     new_users_today = User.query.filter(
-        User.created_at >= db.func.date('now')
+        User.created_at >= db.func.date('now'), 
+        User.is_admin == False
     ).count()
 
     admin_stats = {
@@ -40,13 +42,16 @@ def dashboard():
         'active_users': active_users,
         'inactive_users': total_users - active_users,
         'new_users_today': new_users_today,
-        'total_items': 0,  # Will be updated when Item model is added
-        'pending_items': 0,  # Will be updated when Item model is added
+        'total_items': Item.query.count(),
+        'pending_items': Item.query.filter_by(status='pending').count(),
+        'available_items': Item.query.filter_by(status='available').count(),
         'total_swaps': 0,  # Will be updated when Swap model is added
     }
 
-    # Get recent users
-    recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
+    # Get recent users (excluding admin users)
+    recent_users = User.query.filter_by(is_admin=False)\
+                            .order_by(User.created_at.desc())\
+                            .limit(5).all()
 
     return render_template('admin/admin_dashboard.html',
                          admin_stats=admin_stats,
@@ -60,7 +65,8 @@ def manage_users():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '', type=str)
 
-    query = User.query
+    # Filter out admin users from the query
+    query = User.query.filter_by(is_admin=False)
 
     if search:
         query = query.filter(
