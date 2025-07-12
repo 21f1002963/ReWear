@@ -8,47 +8,63 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from importlib import import_module
 
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+bcrypt = Bcrypt()
 
 
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
+    bcrypt.init_app(app)
 
     # Configure Flask-Login
-    login_manager.login_view = 'home_blueprint.home'  # Redirect to home page for now
+    login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
     login_manager.login_message = 'Please log in to access this page.'
 
     # User loader callback
     @login_manager.user_loader
     def load_user(user_id):
-        # For now, return None since we don't have User model yet
-        # This will be updated when you add authentication
-        return None
-    
+        from models.user import User
+        return User.query.get(int(user_id))
+
     # Handle unauthorized access
     @login_manager.unauthorized_handler
     def unauthorized():
-        # For now, just redirect to home page instead of causing errors
         from flask import redirect, url_for, flash
         flash('Please log in to access this page.', 'info')
-        return redirect(url_for('home_blueprint.home'))
+        return redirect(url_for('auth.login'))
 
 
 def register_blueprints(app):
-    # Import and register the home blueprint from Landing Page
+    # Import and register all blueprints
     try:
+        # Register home/landing page blueprint
         from controllers import blueprint
         if blueprint:
             app.register_blueprint(blueprint)
-            print("Blueprint registered successfully")
-        else:
-            print("Blueprint is None - check controllers/__init__.py")
+            print("Home blueprint registered successfully")
+
+        # Register auth blueprint
+        from controllers.Auth import auth_bp
+        app.register_blueprint(auth_bp)
+        print("Auth blueprint registered successfully")
+
+        # Register user blueprint
+        from controllers.User import user_bp
+        app.register_blueprint(user_bp)
+        print("User blueprint registered successfully")
+
+        # Register admin blueprint
+        from controllers.Admin import admin_bp
+        app.register_blueprint(admin_bp)
+        print("Admin blueprint registered successfully")
+
     except ImportError as e:
         print(f"Error importing blueprint: {e}")
     except Exception as e:

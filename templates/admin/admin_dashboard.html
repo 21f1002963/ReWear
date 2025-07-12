@@ -1,0 +1,320 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Admin Dashboard - ReWear{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrapper {
+    background: #fff;
+    background-image: none;
+  }
+  .auth-wrapper::before {
+    display: none;
+  }
+
+  #menu-toggle {
+    display: none;
+  }
+
+  .burger-btn {
+    position: fixed;
+    top: 12px;
+    left: 25px;
+    z-index: 2100;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .burger-btn:active, .burger-btn:focus {
+    background: #f0f0f0;
+    outline: none;
+  }
+
+  .slide-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding-top: 60px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .slide-menu ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .slide-menu li {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+
+  .slide-menu a {
+    color: #333;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  .slide-menu a:hover {
+    color: #3a7bd5;
+  }
+
+  .slide-menu a[href*="logout"] {
+    color: #dc3545;
+  }
+
+  .slide-menu a[href*="logout"]:hover {
+    color: #c82333;
+  }
+
+  #menu-toggle:checked ~ .slide-menu {
+    transform: translateX(0);
+  }
+
+  #menu-toggle:checked ~ .burger-btn {
+    display: none;
+  }
+
+  .dashboard-header {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+  }
+
+  .stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .stats-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-bar {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+
+  .parking-lot-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .parking-lot-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .status-available {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .status-occupied {
+    background: #ffebee;
+    color: #c62828;
+  }
+
+  .action-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 576px) {
+    .slide-menu { width: 80vw; }
+    .burger-btn { left: 10px; top: 10px; }
+  }
+
+  .footer {
+    margin-top: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<input type="checkbox" id="menu-toggle">
+<label for="menu-toggle" class="burger-btn" aria-label="Open menu">
+  <i class="fas fa-bars"></i>
+</label>
+<nav class="slide-menu" tabindex="-1">
+  <label for="menu-toggle" class="close-btn" aria-label="Close menu">&times;</label>
+  <ul>
+    <li><a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-home me-2"></i>Home</a></li>
+    <li><a href="{{ url_for('auth.profile') }}"><i class="fas fa-user-edit me-2"></i>Profile</a></li>
+    <li><a href="{{ url_for('admin.manage_users') }}"><i class="fas fa-users me-2"></i>Users</a></li>
+    <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+  </ul>
+</nav>
+
+<div class="container mt-4">
+  <div class="dashboard-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="mb-1">Welcome, {{ current_user.full_name }}</h2>
+        <p class="mb-0" style="font-size: 16px;">Manage ReWear platform and monitor community activity</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #e3f2fd; color: #1976d2;">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3 class="mb-1">{{ admin_stats.total_users }}</h3>
+        <p class="text-muted mb-0">Total Users</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #e8f5e9; color: #2e7d32;">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <h3 class="mb-1">{{ admin_stats.active_users }}</h3>
+        <p class="text-muted mb-0">Active Users</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #ffebee; color: #c62828;">
+          <i class="fas fa-tshirt"></i>
+        </div>
+        <h3 class="mb-1">{{ admin_stats.total_items }}</h3>
+        <p class="text-muted mb-0">Total Items</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: #fff3e0; color: #ef6c00;">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h3 class="mb-1">{{ admin_stats.total_swaps }}</h3>
+        <p class="text-muted mb-0">Total Swaps</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Users Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header pb-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <h6>Recent Users</h6>
+            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary btn-sm">
+              <i class="fas fa-users me-2"></i>Manage All Users
+            </a>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Joined</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in recent_users %}
+                <tr>
+                  <td>
+                    <div class="d-flex px-2 py-1">
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="mb-0 text-sm">{{ user.full_name }}</h6>
+                        <p class="text-xs text-secondary mb-0">{{ user.username }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <p class="text-xs font-weight-bold mb-0">{{ user.email }}</p>
+                  </td>
+                  <td class="align-middle text-center text-sm">
+                    {% if user.is_active %}
+                      <span class="badge badge-sm bg-gradient-success">Active</span>
+                    {% else %}
+                      <span class="badge badge-sm bg-gradient-secondary">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td class="align-middle text-center">
+                    <span class="text-secondary text-xs font-weight-bold">{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

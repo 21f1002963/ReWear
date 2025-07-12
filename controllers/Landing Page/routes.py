@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from controllers import blueprint
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
@@ -21,7 +21,7 @@ def home():
 
 @blueprint.route('/index')
 def index():
-    return render_template('home/index.html', segment='index')
+    return redirect(url_for('home_blueprint.home'))
 
 
 @blueprint.route('/<template>')

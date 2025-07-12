@@ -1,0 +1,301 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}User Dashboard - ReWear{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrapper {
+    background: #fff;
+    background-image: none;
+  }
+
+  .auth-wrapper::before {
+    display: none;
+  }
+
+  .profile-card {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 2rem;
+  }
+
+  .profile-header {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    color: white;
+    padding: 1rem;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .btn-save {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(58, 123, 213, 0.3);
+  }
+
+  .btn-cancel {
+    background: #eed849;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cancel:hover {
+    background: #e9ecef;
+  }
+
+  /* Slide menu styles */
+  #menu-toggle {
+    display: none;
+  }
+
+  .burger-btn {
+    position: fixed;
+    top: 12px;
+    left: 25px;
+    z-index: 2100;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .burger-btn:active,
+  .burger-btn:focus {
+    background: #f0f0f0;
+    outline: none;
+  }
+
+  .slide-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding-top: 60px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .slide-menu ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .slide-menu li {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+
+  .slide-menu a {
+    color: #333;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  .slide-menu a:hover {
+    color: #3a7bd5;
+  }
+
+  /* Logout link style */
+  .slide-menu a[href*="logout"] {
+    color: #dc3545;
+  }
+
+  .slide-menu a[href*="logout"]:hover {
+    color: #c82333;
+  }
+
+  /* Checkbox hack for menu toggle */
+  #menu-toggle:checked~.slide-menu {
+    transform: translateX(0);
+  }
+
+  #menu-toggle:checked~.burger-btn {
+    display: none;
+  }
+
+  @media (max-width: 576px) {
+    .slide-menu {
+      width: 80vw;
+    }
+
+    .burger-btn {
+      left: 10px;
+      top: 10px;
+    }
+  }
+
+  .status-badge {
+    background: #2bef5f;
+    color: #00796b;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+  }
+
+  .status-badge-orange {
+    background: #f2b749;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+  }
+
+  .footer {
+    margin-top: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<input type="checkbox" id="menu-toggle">
+<label for="menu-toggle" class="burger-btn" aria-label="Open menu">
+  <i class="fas fa-bars"></i>
+</label>
+<nav class="slide-menu" tabindex="-1">
+  <label for="menu-toggle" class="close-btn" aria-label="Close menu">&times;</label>
+  <ul>
+    <li><a href="{{ url_for('user.dashboard') }}"><i class="fas fa-home me-2"></i>Home</a></li>
+    <li><a href="{{ url_for('auth.profile') }}"><i class="fas fa-user-edit me-2"></i>Profile</a></li>
+    <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+  </ul>
+</nav>
+<div class="container mt-4">
+  <h2 style="margin-top: 1rem;">Welcome, {{ current_user.full_name }}!</h2>
+  <p class="mb-4" style="color: rgb(84, 82, 82);">Start exchanging clothes with our community</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <!-- User Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="profile-card border-0">
+        <div class="card-body text-center">
+          <div class="stats-icon mx-auto mb-3" style="background: #e3f2fd; color: #1976d2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-tshirt"></i>
+          </div>
+          <h4>{{ user_stats.total_items_listed }}</h4>
+          <p class="text-muted">Items Listed</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="profile-card border-0">
+        <div class="card-body text-center">
+          <div class="stats-icon mx-auto mb-3" style="background: #e8f5e9; color: #2e7d32; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-exchange-alt"></i>
+          </div>
+          <h4>{{ user_stats.total_swaps_completed }}</h4>
+          <p class="text-muted">Swaps Completed</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="profile-card border-0">
+        <div class="card-body text-center">
+          <div class="stats-icon mx-auto mb-3" style="background: #fff3e0; color: #ef6c00; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-star"></i>
+          </div>
+          <h4>{{ user_stats.total_points_earned }}</h4>
+          <p class="text-muted">Points Balance</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="profile-card border-0">
+        <div class="card-body text-center">
+          <div class="stats-icon mx-auto mb-3" style="background: #ffebee; color: #c62828; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-search"></i>
+          </div>
+          <h4>{{ user_stats.items_available }}</h4>
+          <p class="text-muted">Items Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card profile-card border-0">
+    <div class="profile-header">
+      <h3 class="mb-0">Quick Actions</h3>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <div class="card h-100 text-center border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body text-white">
+              <i class="fas fa-plus-circle fa-3x mb-3"></i>
+              <h5>List an Item</h5>
+              <p>Add clothes to exchange</p>
+              <button class="btn btn-light">Coming Soon</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card h-100 text-center border-0" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <div class="card-body text-white">
+              <i class="fas fa-search fa-3x mb-3"></i>
+              <h5>Browse Items</h5>
+              <p>Find clothes to swap</p>
+              <button class="btn btn-light">Coming Soon</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card h-100 text-center border-0" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+            <div class="card-body text-white">
+              <i class="fas fa-history fa-3x mb-3"></i>
+              <h5>Swap History</h5>
+              <p>View past exchanges</p>
+              <button class="btn btn-light">Coming Soon</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

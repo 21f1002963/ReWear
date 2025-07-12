@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="/static/assets/img/favicon.png">
 
   <title>
-    Flask ReWear - Presentation | AppSeed
+    ReWear - Community Clothing Exchange
   </title>
 
   <!--     Fonts and icons     -->
@@ -27,6 +27,280 @@
 <body class="presentation-page bg-gray-200">
 
   {% include 'includes/navigation.html' %}
+
+  <header class="header-2">
+    <div class="page-header min-vh-75 relative" style="background-image: url('/static/assets/img/bg2.jpg')">
+      <span class="mask bg-gradient-primary opacity-4"></span>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-7 text-center mx-auto">
+            <h1 class="text-white pt-3 mt-n5"><i class="fas fa-recycle me-3"></i>ReWear</h1>
+            <p class="lead text-white mt-3">Community Clothing Exchange Platform <br /> Promoting sustainable fashion through clothing swaps and exchanges.</p>
+            {% if not current_user.is_authenticated %}
+            <div class="mt-4">
+              <a href="{{ url_for('auth.register') }}" class="btn btn-white btn-lg me-2">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+              </a>
+              <a href="{{ url_for('auth.login') }}" class="btn btn-outline-white btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+              </a>
+            </div>
+            {% else %}
+            <div class="mt-4">
+              {% if current_user.is_admin %}
+              <a href="{{ url_for('admin.dashboard') }}" class="btn btn-white btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+              </a>
+              {% else %}
+              <a href="{{ url_for('user.dashboard') }}" class="btn btn-white btn-lg">
+                <i class="fas fa-user-circle me-2"></i>Go to Dashboard
+              </a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="card card-body blur shadow-blur mx-3 mx-md-4 mt-n6">
+    <section class="pt-3 pb-4" id="count-stats">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-9 mx-auto py-3">
+            <div class="row">
+              <div class="col-md-4 position-relative">
+                <div class="p-3 text-center">
+                  <h1 class="text-gradient text-primary"><span id="state1" countTo="500">0</span>+</h1>
+                  <h5 class="mt-3">Active Users</h5>
+                  <p class="text-sm font-weight-normal">Community members actively exchanging clothes</p>
+                </div>
+                <hr class="vertical dark">
+              </div>
+              <div class="col-md-4 position-relative">
+                <div class="p-3 text-center">
+                  <h1 class="text-gradient text-primary"> <span id="state2" countTo="1200">0</span>+</h1>
+                  <h5 class="mt-3">Items Exchanged</h5>
+                  <p class="text-sm font-weight-normal">Clothing items that found new homes through our platform</p>
+                </div>
+                <hr class="vertical dark">
+              </div>
+              <div class="col-md-4">
+                <div class="p-3 text-center">
+                  <h1 class="text-gradient text-primary" id="state3" countTo="85">0</h1>
+                  <h5 class="mt-3">Sustainability Score</h5>
+                  <p class="text-sm font-weight-normal">Environmental impact reduction through textile reuse</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="my-5 py-5">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-4 ms-auto me-auto p-lg-4 mt-lg-0 mt-4">
+            <div class="rotating-card-container">
+              <div class="card card-rotate card-background card-background-mask-primary shadow-primary mt-md-0 mt-5">
+                <div class="front front-background" style="background-image: url(https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3); background-size: cover;">
+                  <div class="card-body py-7 text-center">
+                    <i class="material-icons text-white text-4xl my-3">swap_horiz</i>
+                    <h3 class="text-white">Start Your <br /> Clothing Exchange</h3>
+                    <p class="text-white opacity-8">Join our community and give your unused clothes a new life while discovering amazing items from others.</p>
+                  </div>
+                </div>
+                <div class="back back-background" style="background-image: url(https://images.unsplash.com/photo-1558769132-cb1aea458c5e?ixlib=rb-4.0.3); background-size: cover;">
+                  <div class="card-body pt-7 text-center">
+                    <h3 class="text-white">Sustainable Fashion</h3>
+                    <p class="text-white opacity-8">Reduce textile waste and promote eco-friendly fashion choices through our innovative exchange system.</p>
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-white btn-sm w-50 mx-auto mt-3">Join ReWear</a>
+                    {% else %}
+                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-white btn-sm w-50 mx-auto mt-3">Your Dashboard</a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 ms-auto">
+            <div class="row justify-content-start">
+              <div class="col-md-6">
+                <div class="info">
+                  <i class="material-icons text-gradient text-primary text-3xl">swap_horiz</i>
+                  <h5 class="font-weight-bolder mt-3">Easy Swapping</h5>
+                  <p class="pe-5">Exchange clothes directly with other community members or use our point-based system for flexible trading.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info">
+                  <i class="material-icons text-gradient text-primary text-3xl">eco</i>
+                  <h5 class="font-weight-bolder mt-3">Eco-Friendly</h5>
+                  <p class="pe-3">Reduce textile waste and promote sustainable fashion by giving clothes a second life.</p>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-start mt-5">
+              <div class="col-md-6 mt-3">
+                <i class="material-icons text-gradient text-primary text-3xl">groups</i>
+                <h5 class="font-weight-bolder mt-3">Community Driven</h5>
+                <p class="pe-5">Join a vibrant community of fashion-conscious individuals who care about sustainability.</p>
+              </div>
+              <div class="col-md-6 mt-3">
+                <div class="info">
+                  <i class="material-icons text-gradient text-primary text-3xl">star</i>
+                  <h5 class="font-weight-bolder mt-3">Quality Assured</h5>
+                  <p class="pe-3">All items are reviewed and moderated to ensure high quality exchanges for everyone.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="my-5 py-5">
+      <div class="container">
+        <div class="row">
+          <div class="row justify-content-center text-center my-sm-5">
+            <div class="col-lg-6">
+              <span class="badge bg-primary mb-3">How It Works</span>
+              <h2 class="text-dark mb-0">Simple Steps to Start</h2>
+              <p class="lead">Get started with ReWear in just a few easy steps and join the sustainable fashion movement.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-sm-5 mt-3">
+        <div class="row">
+          <div class="col-lg-3">
+            <div class="position-sticky pb-lg-5 pb-3 mt-lg-0 mt-5 ps-2" style="top: 100px">
+              <h3>Getting Started</h3>
+              <h6 class="text-secondary font-weight-normal pe-3">Follow these simple steps to join our community and start exchanging clothes</h6>
+            </div>
+          </div>
+          <div class="col-lg-9">
+            <div class="row">
+              <div class="col-md-4 mt-md-0">
+                <div class="card shadow-lg move-on-hover min-height-160">
+                  <div class="card-body text-center p-4">
+                    <i class="material-icons text-primary text-4xl">person_add</i>
+                    <h5 class="mt-3">1. Sign Up</h5>
+                    <p class="text-sm">Create your free ReWear account and join our community</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mt-md-0 mt-4">
+                <div class="card shadow-lg move-on-hover min-height-160">
+                  <div class="card-body text-center p-4">
+                    <i class="material-icons text-primary text-4xl">add_circle</i>
+                    <h5 class="mt-3">2. List Items</h5>
+                    <p class="text-sm">Upload photos and descriptions of clothes you want to exchange</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mt-md-0 mt-4">
+                <div class="card shadow-lg move-on-hover min-height-160">
+                  <div class="card-body text-center p-4">
+                    <i class="material-icons text-primary text-4xl">swap_horiz</i>
+                    <h5 class="mt-3">3. Start Swapping</h5>
+                    <p class="text-sm">Browse items, make offers, and complete exchanges with other members</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="row text-center my-sm-5 mt-5">
+            <div class="col-lg-6 mx-auto">
+              <span class="badge bg-primary mb-3">Ready to Join?</span>
+              <h2 class="">Start Your Sustainable Fashion Journey</h2>
+              <p class="lead">Join thousands of users who are already making a positive impact on the environment.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="text-center">
+              {% if not current_user.is_authenticated %}
+              <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg mb-3 me-3">
+                <i class="fas fa-user-plus me-2"></i>Get Started Free
+              </a>
+              <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg mb-3">
+                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+              </a>
+              {% else %}
+              <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary btn-lg mb-3">
+                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {% include 'includes/footer.html' %}
+
+  <!--   Core JS Files   -->
+  <script src="/static/assets/js/core/popper.min.js" type="text/javascript"></script>
+  <script src="/static/assets/js/core/bootstrap.min.js" type="text/javascript"></script>
+  <script src="/static/assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <!--  Plugin for TypedJS, full documentation here: https://github.com/inorganik/CountUp.js -->
+  <script src="/static/assets/js/plugins/countup.min.js"></script>
+  <!--  Plugin for Parallax, full documentation here: https://github.com/dixonandmoe/rellax -->
+  <script src="/static/assets/js/plugins/rellax.min.js"></script>
+  <!--  Plugin for TiltJS, full documentation here: https://gijsroge.github.io/tilt.js/ -->
+  <script src="/static/assets/js/plugins/tilt.min.js"></script>
+  <!--  Plugin for Selectpicker - ChoicesJS, full documentation here: https://github.com/jshjohnson/Choices -->
+  <script src="/static/assets/js/plugins/choices.min.js"></script>
+  <!--  Plugin for Parallax, full documentation here: https://github.com/wagerfield/parallax  -->
+  <script src="/static/assets/js/plugins/parallax.min.js"></script>
+  <!-- Control Center for Material UI Kit: parallax effects, scripts for the example pages etc -->
+  <!--  Google Maps Plugin    -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
+  <script src="/static/assets/js/material-kit.min.js?v=3.0.0" type="text/javascript"></script>
+  <script type="text/javascript">
+    if (document.getElementById('state1')) {
+      const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
+      if (!countUp.error) {
+        countUp.start();
+      } else {
+        console.error(countUp.error);
+      }
+    }
+    if (document.getElementById('state2')) {
+      const countUp1 = new CountUp('state2', document.getElementById("state2").getAttribute("countTo"));
+      if (!countUp1.error) {
+        countUp1.start();
+      } else {
+        console.error(countUp1.error);
+      }
+    }
+    if (document.getElementById('state3')) {
+      const countUp2 = new CountUp('state3', document.getElementById("state3").getAttribute("countTo"));
+      if (!countUp2.error) {
+        countUp2.start();
+      } else {
+        console.error(countUp2.error);
+      };
+    }
+  </script>
+
+</body>
+</html>
 
   <header class="header-2">
     <div class="page-header min-vh-75 relative" style="background-image: url('/static/assets/img/bg2.jpg')">
@@ -1032,14 +1306,6 @@
       <div class="bg-gradient-dark position-relative m-3 border-radius-xl overflow-hidden">
         <img src="/static/assets/img/shapes/waves-white.svg" alt="pattern-lines" class="position-absolute start-0 top-md-0 w-100 opacity-2">
         <div class="container py-7 postion-relative z-index-2 position-relative">
-          <div class="row">
-            <div class="col-md-7 mx-auto text-center">
-              <h3 class="text-white mb-0">Do you love this awesome</h3>
-              <h3 class="text-white">UI Kit for Bootstrap 5?</h3>
-              <p class="text-white mb-5">Cause if you do, it can be yours for FREE. Hit the button below to navigate to Creative Tim where you can find the Design System in HTML. Start a new project or give an old Bootstrap project a new look!</p>
-              <a href="https://appseed.us/product/material-kit/flask/" target="_blank" class="btn btn-primary btn-lg mb-3 mb-sm-0">Download</a>
-            </div>
-          </div>
         </div>
       </div>
       <div class="container">
